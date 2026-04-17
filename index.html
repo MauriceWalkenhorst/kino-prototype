@@ -1031,8 +1031,8 @@
     <div class="st-group">
       <div class="st-format-label">Englischer Originalton</div>
       <div class="st-pills">
-        <div class="st-pill" onclick="go('seats')"><div class="st-time">18:45</div><div class="st-avail">12 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
-        <div class="st-pill" onclick="go('seats')"><div class="st-time">21:30</div><div class="st-avail">45 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
+        <div class="st-pill" onclick="goOV('seats')"><div class="st-time">18:45</div><div class="st-avail">12 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
+        <div class="st-pill" onclick="goOV('seats')"><div class="st-time">21:30</div><div class="st-avail">45 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
       </div>
     </div>
   </div>
@@ -1054,7 +1054,7 @@
         </div>
       </div>
 
-      <div style="background: rgba(253,243,0,0.1); border: 1px solid var(--accent); padding: 12px 16px; border-radius: var(--r); margin-bottom: 32px; display: flex; gap: 12px; align-items: flex-start; max-width: 500px; margin-left: auto; margin-right: auto;">
+      <div id="ov-hint" style="display:none; background: rgba(253,243,0,0.1); border: 1px solid var(--accent); padding: 12px 16px; border-radius: var(--r); margin-bottom: 32px; flex-direction: row; gap: 12px; align-items: flex-start; max-width: 500px; margin-left: auto; margin-right: auto;">
         <span style="font-size: 20px; margin-top: 2px;">🇬🇧</span>
         <div style="text-align: left;">
           <strong style="color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Hinweis zur Sprache</strong>
@@ -1324,9 +1324,14 @@
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + page).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'instant' });
-    if (page === 'seats') buildMap();
+    if (page === 'seats') { buildMap(); document.getElementById('ov-hint').style.display = 'none'; }
     if (page === 'confirmation') buildQR();
     setTimeout(initMagnetic, 50);
+  }
+
+  function goOV(page) {
+    document.getElementById('ov-hint').style.display = 'flex';
+    go(page);
   }
 
   /* ── Date tab selection ── */
