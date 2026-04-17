@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#09090b">
+  <link rel="manifest" href="manifest.json">
   <title>CINEX — Kino neu erleben</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,6 +25,15 @@
       --r: 4px;
       --r-lg: 12px;
       --spring: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    :root.light {
+      --bg: #f4f4f5;
+      --text: #09090b;
+      --accent: #d97706;
+      --glass: rgba(0,0,0,0.06);
+      --glass-hover: rgba(0,0,0,0.1);
+      --border: rgba(0,0,0,0.1);
     }
 
     html { scroll-behavior: smooth; }
@@ -67,6 +78,7 @@
       -webkit-backdrop-filter: blur(20px);
       border-bottom-color: var(--border);
     }
+    :root.light nav.solid { background: rgba(255,255,255,0.88); }
     .logo {
       font-size: 22px; font-weight: 900; letter-spacing: 4px;
       color: var(--accent); text-transform: uppercase; cursor: pointer;
@@ -76,7 +88,8 @@
       display: flex; align-items: center; gap: 8px;
       background: var(--glass); border: 1px solid var(--border);
       padding: 7px 16px; border-radius: 20px; font-size: 13px;
-      cursor: pointer; transition: background .15s;
+      color: var(--accent); font-weight: 700;
+      cursor: pointer; transition: all .15s;
     }
     .nav-loc:hover { background: var(--glass-hover); }
     .nav-r { display: flex; align-items: center; gap: 14px; }
@@ -121,6 +134,37 @@
       border-radius: var(--r); cursor: pointer; transition: all .3s var(--spring);
     }
     .btn-ghost:hover { background: var(--glass-hover); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity .3s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--r-lg); padding: 32px; width: 90%; max-width: 400px;
+      transform: translateY(20px) scale(0.95); transition: transform .3s var(--spring);
+    }
+    .modal-overlay.active .modal { transform: translateY(0) scale(1); }
+    .modal-title { font-size: 20px; font-weight: 900; margin-bottom: 20px; }
+    .loc-list { display: flex; flex-direction: column; gap: 8px; }
+    .loc-btn {
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 14px 16px; border-radius: var(--r); color: var(--text);
+      font-family: var(--font); font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: all .2s; text-align: left;
+    }
+    .loc-btn:hover, .loc-btn:focus { background: var(--glass-hover); border-color: var(--accent); outline: none; }
+    .close-modal {
+      margin-top: 24px; width: 100%; padding: 12px; background: transparent;
+      border: 1px solid var(--border); color: var(--text); border-radius: var(--r);
+      cursor: pointer; font-family: var(--font); font-weight: 700;
+    }
+
+    /* ── ACCESSIBILITY ── */
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     /* ── BADGES ── */
     .badge {
@@ -216,7 +260,7 @@
       display: flex; align-items: center; gap: 10px;
       font-size: 14px; font-weight: 700; color: rgba(255,255,255,.7);
       background: none; border: none; cursor: pointer; transition: color .15s;
-      font-family: var(--font);
+      font-family: var(--font); text-decoration: none;
     }
     .trailer-btn:hover { color: #fff; }
     .play-circle {
@@ -639,24 +683,112 @@
     .ticket-price-val { font-size: 22px; font-weight: 900; color: var(--accent); }
 
     .confirm-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    /* ══════════════════════════════════════════
+       MOBILE OPTIMIZATION (RESPONSIVE & POLISH)
+    ══════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      /* NAV */
+      nav { padding: 12px 20px; }
+      .logo { font-size: 18px; }
+      .nav-loc span { display: none; }
+      .nav-loc { padding: 8px; border-radius: 50%; }
+      .nav-r .btn-outline { display: none; }
+      
+      /* MODAL */
+      .modal { padding: 24px; width: 92%; }
+
+      /* HERO */
+      .hero { padding-bottom: 40px; }
+      .hero-content { padding: 0 20px; }
+      .hero-poster-art { display: none; } /* Hide 3D poster on small screens */
+      .hero-title { font-size: clamp(42px, 11vw, 52px); margin-bottom: 16px; }
+      .hero-desc { font-size: 14px; margin-bottom: 24px; }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .hero-actions .btn-primary { justify-content: center; }
+      .trailer-btn { justify-content: center; margin-top: 8px; padding: 8px; }
+
+      /* FILM GRID */
+      .section { padding: 48px 20px; }
+      .film-grid { 
+        display: flex; overflow-x: auto; scrollbar-width: none;
+        scroll-snap-type: x mandatory; margin: 0 -20px; padding: 0 20px; gap: 16px;
+      }
+      .film-card { flex: 0 0 65%; scroll-snap-align: center; }
+      
+      /* COMING SOON */
+      .coming-strip { padding: 0 20px 48px; margin: 0 -20px; padding-left: 20px; scroll-snap-type: x mandatory; }
+      .coming-card { width: 220px; scroll-snap-align: center; }
+
+      /* DETAIL PAGE */
+      .detail-hero { height: auto; padding-top: 100px; padding-bottom: 30px; }
+      .detail-content { padding: 0 20px; flex-direction: column; align-items: center; text-align: center; gap: 24px; }
+      .detail-poster-wrap { width: 140px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
+      .detail-row { justify-content: center; }
+      .back-btn { top: 76px; left: 20px; }
+      .showtimes { padding: 24px 20px 48px; }
+      .date-tab { padding: 12px 18px; } /* larger touch targets */
+      .st-pill { padding: 14px 20px; }
+
+      /* SEATS PAGE */
+      .seats-wrap { flex-direction: column; padding-top: 60px; }
+      .seats-main { padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-x: auto; }
+      .seats-page-title { text-align: center; }
+      .seats-page-sub { text-align: center; }
+      .seat-map { transform: scale(0.95); transform-origin: top center; margin-bottom: 20px; }
+      .seats-sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border); padding: 24px 20px; }
+
+      /* CHECKOUT PAGE */
+      .checkout-wrap { flex-direction: column; padding: 90px 20px 48px; gap: 32px; }
+      .checkout-summary-col { width: 100%; position: static; }
+      .form-row { flex-direction: column; gap: 0; }
+      .form-group { margin-bottom: 18px; }
+      .pay-opts { flex-direction: column; }
+      .promo-row { flex-direction: column; }
+
+      /* CONFIRMATION PAGE */
+      .confirm-page { padding: 90px 20px 48px; }
+      .ticket-top { flex-direction: column; text-align: center; gap: 12px; }
+      .ticket-bottom { flex-direction: column; align-items: center; text-align: center; gap: 16px; }
+      .ticket-seats-info, .ticket-price-block { text-align: center; width: 100%; }
+      .confirm-actions { flex-direction: column; width: 100%; }
+      .confirm-actions button { width: 100%; }
+    }
   </style>
 </head>
 <body>
 
 <!-- NAV -->
-<nav id="nav">
-  <div class="logo" onclick="go('home')">CINEX</div>
-  <div class="nav-loc">
+<nav id="nav" aria-label="Hauptnavigation">
+  <button class="logo" style="background:none;border:none;padding:0;" onclick="go('home')" aria-label="Zurück zur Startseite">CINEX</button>
+  <button class="nav-loc" id="nav-loc-btn" aria-haspopup="dialog" aria-expanded="false" aria-label="Kino Standort auswählen">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-    Bochum Ruhr Park
-  </div>
+    <span id="loc-name">Bochum Ruhr Park</span>
+  </button>
   <div class="nav-r">
+    <button class="icon-btn" id="theme-toggle" aria-label="Dark/Light Mode umschalten">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
     <button class="icon-btn" aria-label="Suche">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
     <button class="btn-outline">Anmelden</button>
   </div>
 </nav>
+
+<!-- MODAL: LOCATION -->
+<div class="modal-overlay" id="loc-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <h3 class="modal-title" id="modal-title">Kino wählen</h3>
+    <div class="loc-list">
+      <button class="loc-btn" onclick="setLoc('Bochum Ruhr Park')">Bochum Ruhr Park</button>
+      <button class="loc-btn" onclick="setLoc('Düsseldorf')">Düsseldorf</button>
+      <button class="loc-btn" onclick="setLoc('Berlin Mercedes Platz')">Berlin Mercedes Platz</button>
+      <button class="loc-btn" onclick="setLoc('Hamburg Othmarschen')">Hamburg Othmarschen</button>
+    </div>
+    <button class="close-modal" id="close-loc-modal">Abbrechen</button>
+  </div>
+</div>
 
 
 <!-- ═══════════════ PAGE: HOME ═══════════════ -->
@@ -684,10 +816,10 @@
       <p class="hero-desc">Paul Atreides vereint sich mit Chani und den Fremen im Rachefeldzug gegen die Verschwörer, die seine Familie zerstörten.</p>
       <div class="hero-actions">
         <button class="btn-primary" onclick="go('detail')">Tickets kaufen</button>
-        <button class="trailer-btn">
+        <a href="https://www.youtube.com/watch?v=xI6whUDDVuU" target="_blank" rel="noopener noreferrer" class="trailer-btn">
           <div class="play-circle">▶</div>
           Trailer ansehen
-        </button>
+        </a>
       </div>
     </div>
   </div>
@@ -897,9 +1029,10 @@
       </div>
     </div>
     <div class="st-group">
-      <div class="st-format-label">OV — Original Version</div>
+      <div class="st-format-label">Englischer Originalton</div>
       <div class="st-pills">
-        <div class="st-pill" onclick="go('seats')"><div class="st-time">21:30</div><div class="st-avail">45 frei</div><div class="st-fmt" style="color:rgba(255,255,255,.4)">OV</div></div>
+        <div class="st-pill" onclick="go('seats')"><div class="st-time">18:45</div><div class="st-avail">12 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
+        <div class="st-pill" onclick="go('seats')"><div class="st-time">21:30</div><div class="st-avail">45 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
       </div>
     </div>
   </div>
@@ -910,14 +1043,22 @@
 <div class="page" id="page-seats">
   <div class="seats-wrap">
     <div class="seats-main">
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:32px">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
         <button class="btn-ghost" onclick="go('detail')" style="padding:9px 16px;font-size:13px;display:flex;align-items:center;gap:6px">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
           Zurück
         </button>
         <div>
           <div class="seats-page-title">Sitzplatz wählen</div>
-          <div class="seats-page-sub" style="margin-bottom:0">Dune: Part Two · 20:15 Uhr · Saal 7 · IMAX</div>
+          <div class="seats-page-sub" style="margin-bottom:0">Dune: Part Two · 21:30 Uhr · Saal 7 · 🇬🇧 OV (Englisch)</div>
+        </div>
+      </div>
+
+      <div style="background: rgba(253,243,0,0.1); border: 1px solid var(--accent); padding: 12px 16px; border-radius: var(--r); margin-bottom: 32px; display: flex; gap: 12px; align-items: flex-start; max-width: 500px; margin-left: auto; margin-right: auto;">
+        <span style="font-size: 20px; margin-top: 2px;">🇬🇧</span>
+        <div style="text-align: left;">
+          <strong style="color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Hinweis zur Sprache</strong>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.9); margin-top: 2px;">Diese Vorstellung wird komplett im <b>englischen Originalton</b> (ohne deutsche Synchronisation) gezeigt.</div>
         </div>
       </div>
 
@@ -940,7 +1081,7 @@
       <div class="sb-section">
         <div class="sb-label">Film</div>
         <div class="sb-title">Dune: Part Two</div>
-        <div class="sb-meta">Heute · 20:15 Uhr<br>Saal 7 · IMAX</div>
+        <div class="sb-meta">Heute · 21:30 Uhr<br>Saal 7 · 🇬🇧 OV (Englisch)</div>
       </div>
       <div class="sb-divider"></div>
       <div class="sb-section" style="flex:1">
@@ -1041,7 +1182,7 @@
           </div>
           <div>
             <div class="summary-film-title">Dune: Part Two</div>
-            <div class="summary-film-detail">Donnerstag, 17. April<br>20:15 Uhr · IMAX<br>UCI Bochum · Saal 7</div>
+            <div class="summary-film-detail">Donnerstag, 17. April<br>21:30 Uhr · 🇬🇧 OV (Englisch)<br>CINEX Bochum · Saal 7</div>
           </div>
         </div>
         <div class="summary-line"><span>Reihe D, Platz 5</span><span>12,00 €</span></div>
@@ -1073,8 +1214,8 @@
             <div class="ticket-film-title">Dune: Part Two</div>
             <div class="ticket-detail">
               Do., 17. April 2026<br>
-              20:15 Uhr · IMAX<br>
-              UCI Bochum Ruhr Park · Saal 7
+              21:30 Uhr · 🇬🇧 OV (Englisch)<br>
+              CINEX Bochum Ruhr Park · Saal 7
             </div>
           </div>
         </div>
@@ -1268,6 +1409,48 @@
   function selectPay(el) {
     el.closest('.pay-opts').querySelectorAll('.pay-opt').forEach(o => o.classList.remove('active'));
     el.classList.add('active');
+  }
+
+  /* ── Service Worker (PWA) ── */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW reg fail:', err));
+    });
+  }
+
+  /* ── Theme Toggle ── */
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('light');
+    const isLight = document.documentElement.classList.contains('light');
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', isLight ? '#f4f4f5' : '#09090b');
+  });
+
+  /* ── Location Modal ── */
+  const locBtn = document.getElementById('nav-loc-btn');
+  const locModal = document.getElementById('loc-modal');
+  const closeLocBtn = document.getElementById('close-loc-modal');
+  const locName = document.getElementById('loc-name');
+
+  locBtn.addEventListener('click', () => {
+    locModal.classList.add('active');
+    locBtn.setAttribute('aria-expanded', 'true');
+    locModal.querySelector('.loc-btn').focus();
+  });
+  
+  function closeLoc() {
+    locModal.classList.remove('active');
+    locBtn.setAttribute('aria-expanded', 'false');
+    locBtn.focus();
+  }
+  
+  closeLocBtn.addEventListener('click', closeLoc);
+  locModal.addEventListener('click', e => { if(e.target === locModal) closeLoc(); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && locModal.classList.contains('active')) closeLoc(); });
+
+  function setLoc(name) {
+    locName.textContent = name;
+    closeLoc();
   }
 
   /* ── QR Code (simple pixel art) ── */
