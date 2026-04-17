@@ -1330,18 +1330,24 @@
 
 
   /* ── Page routing ── */
+  let _nextIsOV = false;
+
   function go(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + page).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'instant' });
-    if (page === 'seats') { buildMap(); document.getElementById('ov-hint').style.display = 'none'; }
+    if (page === 'seats') {
+      buildMap();
+      document.getElementById('ov-hint').style.display = _nextIsOV ? 'flex' : 'none';
+      _nextIsOV = false;
+    }
     if (page === 'confirmation') buildQR();
     setTimeout(initMagnetic, 50);
   }
 
   function goOV(page) {
+    _nextIsOV = true;
     go(page);
-    document.getElementById('ov-hint').style.display = 'flex';
   }
 
   /* ── Date tab selection ── */
