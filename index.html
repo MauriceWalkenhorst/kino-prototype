@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CINEX — Kino neu erleben</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #09090b;
+      --text: #fff;
+      --accent: #fdf300;
+      --hot: #eb265c;
+      --info: #0092d2;
+      --glass: rgba(255,255,255,0.06);
+      --glass-hover: rgba(255,255,255,0.1);
+      --border: rgba(255,255,255,0.08);
+      --font: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --r: 4px;
+      --r-lg: 12px;
+      --spring: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ── Float animation (hero poster) ── */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33%       { transform: translateY(-10px) rotate(.4deg); }
+      66%       { transform: translateY(-5px) rotate(-.3deg); }
+    }
+    /* ── Stagger film cards ── */
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .film-card { animation: cardIn .5s var(--spring) both; }
+    .film-card:nth-child(1) { animation-delay: .05s; }
+    .film-card:nth-child(2) { animation-delay: .1s; }
+    .film-card:nth-child(3) { animation-delay: .15s; }
+    .film-card:nth-child(4) { animation-delay: .2s; }
+    .film-card:nth-child(5) { animation-delay: .25s; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      padding: 18px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background .3s, backdrop-filter .3s, border-color .3s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.solid {
+      background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom-color: var(--border);
+    }
+    .logo {
+      font-size: 22px; font-weight: 900; letter-spacing: 4px;
+      color: var(--accent); text-transform: uppercase; cursor: pointer;
+      user-select: none;
+    }
+    .nav-loc {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 7px 16px; border-radius: 20px; font-size: 13px;
+      cursor: pointer; transition: background .15s;
+    }
+    .nav-loc:hover { background: var(--glass-hover); }
+    .nav-r { display: flex; align-items: center; gap: 14px; }
+    .icon-btn {
+      background: none; border: none; color: var(--text);
+      cursor: pointer; padding: 8px; border-radius: 50%;
+      display: flex; transition: background .15s;
+    }
+    .icon-btn:hover { background: var(--glass); }
+    .btn-outline {
+      border: 1.5px solid var(--accent); color: var(--accent);
+      background: transparent; padding: 7px 20px;
+      border-radius: var(--r); font-family: var(--font);
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      letter-spacing: .5px; transition: all .3s var(--spring);
+    }
+    .btn-outline:hover { background: var(--accent); color: #000; }
+
+    /* ── PAGE SYSTEM ── */
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: block; animation: fadeUp .4s var(--spring); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      background: var(--accent); color: #000;
+      border: none; padding: 14px 32px;
+      font-family: var(--font); font-size: 14px; font-weight: 900;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      border-radius: var(--r); cursor: pointer; transition: all .3s var(--spring);
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: #fff; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+    .btn-ghost {
+      background: var(--glass); color: var(--text);
+      border: 1px solid var(--border); padding: 12px 24px;
+      font-family: var(--font); font-size: 14px; font-weight: 700;
+      border-radius: var(--r); cursor: pointer; transition: all .3s var(--spring);
+    }
+    .btn-ghost:hover { background: var(--glass-hover); }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 9px; border-radius: 3px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .badge-hot { background: var(--hot); color: #fff; }
+    .badge-info { background: var(--info); color: #fff; }
+    .badge-new { background: var(--accent); color: #000; }
+
+    /* ══════════════════════════════════════════
+       PAGE 1: HOMEPAGE
+    ══════════════════════════════════════════ */
+
+    /* Hero */
+    .hero {
+      position: relative; height: 100vh;
+      display: flex; align-items: flex-end;
+      padding-bottom: 80px; overflow: hidden;
+    }
+    .hero-canvas {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 70% 40%, #1e0a3c 0%, #000 60%);
+    }
+    .hero-canvas::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to right, #000 0%, rgba(0,0,0,0) 50%),
+        linear-gradient(to top,   #000 0%, rgba(0,0,0,0) 55%);
+    }
+    /* Glowing orbs */
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
+    }
+    .orb-1 { width: 500px; height: 500px; background: var(--hot);   opacity: .18; top: -100px; right: 15%; }
+    .orb-2 { width: 400px; height: 400px; background: var(--info);  opacity: .2;  bottom: 5%;  right: 5%;  }
+    .orb-3 { width: 250px; height: 250px; background: var(--accent); opacity: .08; top: 40%;   right: 38%; }
+    /* Poster placeholder art */
+    .hero-poster-art {
+      position: absolute; right: 8%; top: 50%; transform: translateY(-50%);
+      width: 320px; height: 480px; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 40px 120px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.08);
+      z-index: 1;
+      animation: float 6s ease-in-out infinite;
+    }
+    .hero-poster-art::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, #2d1b69 0%, #11998e 55%, #eb265c 100%);
+    }
+    .hero-poster-art::after {
+      content: 'DUNE:\A PART TWO';
+      white-space: pre;
+      position: absolute; bottom: 28px; left: 24px; right: 24px;
+      font-size: 28px; font-weight: 900; letter-spacing: -1px;
+      line-height: 1; text-transform: uppercase; color: #fff;
+      text-shadow: 0 2px 20px rgba(0,0,0,.5);
+    }
+    .hero-poster-shine {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 50%);
+      z-index: 2;
+    }
+    .hero-content {
+      position: relative; z-index: 2; padding: 0 60px; max-width: 660px;
+    }
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block; width: 36px; height: 2px; background: var(--accent);
+    }
+    .hero-eyebrow span { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+    .hero-title {
+      font-size: clamp(52px, 7vw, 84px);
+      font-weight: 900; line-height: .92; letter-spacing: -3px;
+      text-transform: uppercase; margin-bottom: 24px;
+    }
+    .hero-meta {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .hero-meta .star { color: var(--accent); font-weight: 700; font-size: 15px; }
+    .dot { width: 3px; height: 3px; background: rgba(255,255,255,.3); border-radius: 50%; }
+    .hero-meta span { font-size: 13px; color: rgba(255,255,255,.55); }
+    .hero-desc {
+      font-size: 15px; color: rgba(255,255,255,.65); line-height: 1.75;
+      margin-bottom: 36px; max-width: 480px;
+    }
+    .hero-actions { display: flex; gap: 14px; align-items: center; }
+    .trailer-btn {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 700; color: rgba(255,255,255,.7);
+      background: none; border: none; cursor: pointer; transition: color .15s;
+      font-family: var(--font);
+    }
+    .trailer-btn:hover { color: #fff; }
+    .play-circle {
+      width: 42px; height: 42px; border: 1.5px solid rgba(255,255,255,.4);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; transition: border-color .15s, background .15s;
+    }
+    .trailer-btn:hover .play-circle { border-color: #fff; background: rgba(255,255,255,.08); }
+
+    /* Film Grid */
+    .section { padding: 72px 60px; }
+    .section-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .section-title { font-size: 26px; font-weight: 900; letter-spacing: -.5px; }
+    .link-btn {
+      font-size: 12px; color: var(--accent); font-weight: 700;
+      letter-spacing: 1px; cursor: pointer; transition: opacity .15s;
+      background: none; border: none; font-family: var(--font); text-transform: uppercase;
+    }
+    .link-btn:hover { opacity: .7; }
+
+    .film-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+    .film-card {
+      cursor: pointer; border-radius: var(--r-lg);
+      overflow: hidden; transition: transform .3s;
+    }
+    .film-card:hover { transform: translateY(-6px); }
+    .film-card:hover .card-overlay { opacity: 1; }
+    .poster {
+      aspect-ratio: 2/3; position: relative; overflow: hidden; border-radius: var(--r-lg);
+    }
+    .poster-bg {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .poster-bg img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      border-radius: inherit;
+      transition: opacity .4s var(--spring);
+    }
+    .poster-bg img.loading { opacity: 0; }
+    .hero-poster-art img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+      z-index: 1; border-radius: 16px;
+      transition: opacity .6s var(--spring);
+    }
+    .hero-poster-art img.loading { opacity: 0; }
+    .poster-title {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 40px 14px 14px;
+      background: linear-gradient(to top, rgba(0,0,0,.95), transparent);
+      font-size: 15px; font-weight: 900; text-transform: uppercase;
+      letter-spacing: .5px; line-height: 1.2;
+    }
+    .card-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,.55);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .3s; border-radius: var(--r-lg);
+    }
+    .play-btn {
+      width: 52px; height: 52px; background: var(--accent);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: #000; font-size: 18px;
+    }
+    .poster-badge { position: absolute; top: 10px; left: 10px; z-index: 2; }
+    .card-meta { padding: 10px 2px; }
+    .card-meta-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .card-meta-sub {
+      font-size: 12px; color: rgba(255,255,255,.45);
+      display: flex; gap: 8px;
+    }
+    .card-meta-sub .star { color: var(--accent); font-weight: 700; }
+
+    /* Coming soon strip */
+    .coming-strip {
+      padding: 0 60px 72px;
+      display: flex; gap: 16px; overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .coming-strip::-webkit-scrollbar { display: none; }
+    .coming-card {
+      flex-shrink: 0; width: 260px; cursor: pointer;
+      border-radius: var(--r-lg); overflow: hidden;
+      border: 1px solid var(--border); transition: border-color .2s;
+    }
+    .coming-card:hover { border-color: rgba(255,255,255,.25); }
+    .coming-thumb {
+      height: 140px; position: relative; overflow: hidden;
+    }
+    .coming-thumb-bg { width: 100%; height: 100%; position: relative; overflow: hidden; }
+    .coming-thumb-bg img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+      transition: opacity .4s var(--spring);
+    }
+    .coming-thumb-bg img.loading { opacity: 0; }
+    .coming-thumb::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.7), transparent);
+    }
+    .coming-body { padding: 14px 16px; background: #0d0d0d; }
+    .coming-title { font-size: 14px; font-weight: 900; margin-bottom: 4px; }
+    .coming-date { font-size: 12px; color: var(--accent); font-weight: 700; }
+    .coming-genre { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 3px; }
+
+    /* ══════════════════════════════════════════
+       PAGE 2: FILM DETAIL
+    ══════════════════════════════════════════ */
+
+    .detail-hero {
+      position: relative; height: 65vh;
+      display: flex; align-items: flex-end;
+    }
+    .detail-bg {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .detail-bg-canvas {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #2d1b69 0%, #11998e 55%, #1a0505 100%);
+    }
+    .detail-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to top,   #000 0%,  rgba(0,0,0,.1) 55%),
+        linear-gradient(to right, #000 0%, rgba(0,0,0,.0) 65%);
+    }
+    .detail-orb-1 { width: 600px; height: 600px; background: var(--hot); opacity: .15; top: -150px; right: 10%; }
+    .detail-orb-2 { width: 400px; height: 400px; background: var(--info); opacity: .18; bottom: 0; right: 20%; }
+    .detail-content {
+      position: relative; z-index: 2; padding: 48px 60px;
+      display: flex; gap: 36px; align-items: flex-end; width: 100%;
+    }
+    .detail-poster-wrap {
+      width: 150px; flex-shrink: 0; border-radius: 10px;
+      overflow: hidden; box-shadow: 0 24px 72px rgba(0,0,0,.8);
+    }
+    .detail-poster-wrap .poster { aspect-ratio: 2/3; border-radius: 0; }
+    .detail-info { flex: 1; }
+    .detail-title {
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 900; letter-spacing: -2px;
+      text-transform: uppercase; line-height: .92; margin-bottom: 18px;
+    }
+    .detail-row {
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap; margin-bottom: 18px;
+    }
+    .detail-star { color: var(--accent); font-size: 17px; font-weight: 900; }
+    .detail-star sub { font-size: 12px; color: rgba(255,255,255,.4); font-weight: 400; }
+    .tag {
+      padding: 4px 11px; border: 1px solid var(--border);
+      border-radius: 2px; font-size: 11px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,.5);
+    }
+    .detail-desc {
+      font-size: 14px; color: rgba(255,255,255,.65); line-height: 1.75;
+      max-width: 560px;
+    }
+    .back-btn {
+      position: absolute; top: 100px; left: 60px; z-index: 10;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 700; color: rgba(255,255,255,.6);
+      background: none; border: none; cursor: pointer; font-family: var(--font);
+      transition: color .15s;
+    }
+    .back-btn:hover { color: #fff; }
+
+    /* Showtimes */
+    .showtimes { padding: 48px 60px 72px; }
+    .showtimes-title { font-size: 20px; font-weight: 900; margin-bottom: 24px; }
+    .date-tabs {
+      display: flex; gap: 8px; margin-bottom: 36px;
+      overflow-x: auto; padding-bottom: 2px; scrollbar-width: none;
+    }
+    .date-tabs::-webkit-scrollbar { display: none; }
+    .date-tab {
+      flex-shrink: 0; padding: 10px 18px; border-radius: 8px;
+      border: 1px solid var(--border); background: transparent;
+      color: rgba(255,255,255,.5); font-family: var(--font);
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: all .3s var(--spring); text-align: center; min-width: 72px;
+    }
+    .date-tab .day-label { font-size: 10px; font-weight: 400; display: block; opacity: .65; margin-bottom: 2px; }
+    .date-tab:hover, .date-tab.active {
+      background: var(--accent); color: #000; border-color: var(--accent);
+    }
+    .st-group { margin-bottom: 28px; }
+    .st-format-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(255,255,255,.35);
+      margin-bottom: 12px;
+    }
+    .st-pills { display: flex; flex-wrap: wrap; gap: 10px; }
+    .st-pill {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 12px 18px; background: var(--glass);
+      border: 1px solid var(--border); border-radius: 8px;
+      cursor: pointer; transition: all .3s var(--spring); min-width: 86px;
+    }
+    .st-pill:hover { background: rgba(253,243,0,.12); border-color: var(--accent); }
+    .st-pill.active { background: var(--accent); border-color: var(--accent); color: #000; }
+    .st-time { font-size: 17px; font-weight: 900; }
+    .st-avail { font-size: 10px; margin-top: 3px; opacity: .55; }
+    .st-fmt { font-size: 9px; font-weight: 700; letter-spacing: 1px; margin-top: 2px; }
+
+    /* ══════════════════════════════════════════
+       PAGE 3: SEATS
+    ══════════════════════════════════════════ */
+
+    .seats-wrap {
+      display: flex; min-height: 100vh; padding-top: 80px;
+    }
+    .seats-main {
+      flex: 1; padding: 44px 60px; overflow-y: auto;
+    }
+    .seats-sidebar {
+      width: 320px; flex-shrink: 0;
+      background: rgba(255,255,255,.025);
+      border-left: 1px solid var(--border);
+      padding: 44px 28px;
+      display: flex; flex-direction: column;
+    }
+    .seats-page-title { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+    .seats-page-sub { font-size: 13px; color: rgba(255,255,255,.45); margin-bottom: 40px; }
+
+    .screen-wrap { text-align: center; margin-bottom: 52px; }
+    .screen-bar {
+      width: 60%; margin: 0 auto 10px;
+      height: 4px;
+      background: linear-gradient(to right, transparent, var(--info), transparent);
+      border-radius: 2px;
+      box-shadow: 0 0 24px rgba(0,146,210,.6);
+    }
+    .screen-lbl { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,.25); }
+
+    .seat-map { display: flex; flex-direction: column; gap: 7px; align-items: center; }
+    .seat-row { display: flex; align-items: center; gap: 5px; }
+    .row-lbl { width: 18px; text-align: center; font-size: 10px; color: rgba(255,255,255,.25); font-weight: 700; }
+    .seat {
+      width: 28px; height: 24px; border-radius: 4px 4px 2px 2px;
+      cursor: pointer; transition: all .1s; border: none; outline: none; position: relative;
+    }
+    .seat.free    { background: rgba(255,255,255,.14); }
+    .seat.free:hover { background: rgba(253,243,0,.45); transform: scaleY(1.06); }
+    .seat.taken   { background: rgba(255,255,255,.04); cursor: not-allowed; }
+    .seat.premium { background: rgba(235,38,92,.22); }
+    .seat.premium:hover { background: rgba(235,38,92,.45); }
+    .seat.selected { background: var(--accent) !important; }
+    .seat.premium.selected { background: var(--hot) !important; }
+    .aisle { width: 18px; }
+
+    .legend {
+      display: flex; gap: 20px; justify-content: center;
+      margin-top: 28px; flex-wrap: wrap;
+    }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: rgba(255,255,255,.45); }
+    .legend-dot { width: 14px; height: 12px; border-radius: 3px 3px 1px 1px; }
+
+    /* Sidebar */
+    .sb-section { margin-bottom: 24px; }
+    .sb-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.35); margin-bottom: 10px; }
+    .sb-title { font-size: 17px; font-weight: 900; }
+    .sb-meta { font-size: 12px; color: rgba(255,255,255,.45); margin-top: 4px; line-height: 1.6; }
+    .sb-divider { height: 1px; background: var(--border); margin: 18px 0; }
+    .seat-list { display: flex; flex-direction: column; gap: 8px; min-height: 56px; }
+    .seat-item { display: flex; justify-content: space-between; font-size: 13px; color: rgba(255,255,255,.75); }
+    .seat-item .price { color: var(--accent); font-weight: 700; }
+    .seat-empty { font-size: 12px; color: rgba(255,255,255,.25); font-style: italic; }
+    .price-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: 16px; font-weight: 900;
+    }
+    .price-row .total { font-size: 26px; color: var(--accent); }
+    .sb-note { font-size: 11px; color: rgba(255,255,255,.25); text-align: center; margin-top: 10px; }
+
+    /* ══════════════════════════════════════════
+       PAGE 4: CHECKOUT
+    ══════════════════════════════════════════ */
+
+    .checkout-wrap {
+      display: flex; gap: 48px;
+      padding: 120px 60px 72px;
+      min-height: 100vh; align-items: flex-start;
+    }
+    .checkout-form-col { flex: 1; max-width: 580px; }
+    .checkout-summary-col { width: 340px; flex-shrink: 0; position: sticky; top: 100px; }
+    .checkout-title { font-size: 28px; font-weight: 900; margin-bottom: 36px; }
+
+    .form-section { margin-bottom: 32px; }
+    .form-section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,.35); margin-bottom: 16px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    }
+    .form-row { display: flex; gap: 16px; }
+    .form-group { flex: 1; margin-bottom: 14px; }
+    .form-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,.45); margin-bottom: 7px; }
+    .form-input {
+      width: 100%; background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 13px 15px;
+      font-family: var(--font); font-size: 15px; color: var(--text);
+      transition: border-color .15s; outline: none;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: rgba(255,255,255,.2); }
+
+    .pay-opts { display: flex; gap: 10px; margin-bottom: 18px; }
+    .pay-opt {
+      flex: 1; padding: 13px 10px; border: 1px solid var(--border);
+      border-radius: 8px; background: var(--glass); cursor: pointer;
+      text-align: center; transition: all .3s var(--spring);
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      font-family: var(--font); font-size: 12px; font-weight: 700; color: var(--text);
+    }
+    .pay-opt:hover { border-color: rgba(255,255,255,.3); }
+    .pay-opt.active { border-color: var(--accent); background: rgba(253,243,0,.07); }
+    .pay-icon { font-size: 20px; }
+
+    .promo-row { display: flex; gap: 10px; }
+    .promo-row .form-input { flex: 1; }
+    .promo-btn {
+      background: transparent; border: 1px solid var(--border); color: var(--text);
+      padding: 13px 18px; font-family: var(--font); font-size: 13px; font-weight: 700;
+      border-radius: var(--r); cursor: pointer; white-space: nowrap; transition: all .3s var(--spring);
+    }
+    .promo-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Summary card */
+    .summary-card {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--r-lg); padding: 26px;
+      backdrop-filter: blur(12px);
+    }
+    .summary-card-title { font-size: 15px; font-weight: 900; margin-bottom: 18px; }
+    .summary-film-row {
+      display: flex; gap: 14px; margin-bottom: 18px;
+      padding-bottom: 18px; border-bottom: 1px solid var(--border);
+    }
+    .summary-poster-wrap { width: 52px; flex-shrink: 0; }
+    .summary-poster-wrap .poster { border-radius: 4px; aspect-ratio: 2/3; }
+    .summary-film-title { font-size: 14px; font-weight: 900; margin-bottom: 3px; }
+    .summary-film-detail { font-size: 11px; color: rgba(255,255,255,.45); line-height: 1.7; }
+    .summary-line { display: flex; justify-content: space-between; font-size: 13px; color: rgba(255,255,255,.6); margin-bottom: 8px; }
+    .summary-line.total {
+      font-size: 17px; font-weight: 900; color: var(--text);
+      padding-top: 12px; border-top: 1px solid var(--border); margin-top: 4px;
+    }
+    .summary-line.total .amount { color: var(--accent); }
+
+    .buy-btn {
+      width: 100%; margin-top: 0; padding: 17px;
+      font-size: 15px; justify-content: center;
+    }
+    .secure-note { font-size: 11px; color: rgba(255,255,255,.25); text-align: center; margin-top: 12px; }
+
+    /* ══════════════════════════════════════════
+       PAGE 5: CONFIRMATION
+    ══════════════════════════════════════════ */
+
+    .confirm-page {
+      min-height: 100vh; display: flex;
+      align-items: center; justify-content: center;
+      padding: 120px 40px 72px;
+    }
+    .confirm-content { max-width: 520px; width: 100%; text-align: center; }
+    .confirm-icon {
+      width: 72px; height: 72px; background: var(--accent);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px; font-size: 28px; font-weight: 900; color: #000;
+      animation: pop .4s cubic-bezier(.175,.885,.32,1.275);
+    }
+    @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+    .confirm-title { font-size: 34px; font-weight: 900; margin-bottom: 8px; }
+    .confirm-sub { font-size: 15px; color: rgba(255,255,255,.45); margin-bottom: 40px; }
+
+    .ticket {
+      background: linear-gradient(160deg, #111 0%, #0a0a0a 100%);
+      border: 1px solid rgba(255,255,255,.08); border-radius: 14px;
+      overflow: hidden; margin-bottom: 28px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    }
+    .ticket-top { padding: 24px; display: flex; gap: 18px; align-items: center; }
+    .ticket-poster-wrap { width: 72px; flex-shrink: 0; }
+    .ticket-poster-wrap .poster { border-radius: 6px; aspect-ratio: 2/3; }
+    .ticket-film-title { font-size: 18px; font-weight: 900; margin-bottom: 4px; }
+    .ticket-detail { font-size: 12px; color: rgba(255,255,255,.45); line-height: 1.8; }
+    .ticket-perf {
+      display: flex; align-items: center;
+      background: rgba(255,255,255,.03);
+      border-top: 1px dashed rgba(255,255,255,.08);
+    }
+    .ticket-notch {
+      width: 22px; height: 22px; background: #000; border-radius: 50%; flex-shrink: 0;
+      margin: 0 -11px; border: 1px solid rgba(255,255,255,.04);
+    }
+    .ticket-dashed { flex: 1; height: 1px; background: repeating-linear-gradient(to right, transparent, transparent 5px, rgba(255,255,255,.07) 5px, rgba(255,255,255,.07) 10px); }
+    .ticket-bottom { padding: 22px 24px; display: flex; gap: 16px; align-items: center; }
+    .qr {
+      width: 72px; height: 72px; background: #fff;
+      border-radius: 6px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .qr-inner {
+      display: grid; grid-template-columns: repeat(7,8px); grid-template-rows: repeat(7,8px); gap: 1px;
+    }
+    .qr-cell { width: 8px; height: 8px; }
+    .ticket-seats-info { flex: 1; text-align: left; }
+    .ticket-seats-lbl { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.3); margin-bottom: 6px; }
+    .ticket-seats-val { font-size: 24px; font-weight: 900; color: var(--accent); }
+    .ticket-price-block { text-align: right; }
+    .ticket-price-lbl { font-size: 10px; color: rgba(255,255,255,.3); }
+    .ticket-price-val { font-size: 22px; font-weight: 900; color: var(--accent); }
+
+    .confirm-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo" onclick="go('home')">CINEX</div>
+  <div class="nav-loc">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    Bochum Ruhr Park
+  </div>
+  <div class="nav-r">
+    <button class="icon-btn" aria-label="Suche">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <button class="btn-outline">Anmelden</button>
+  </div>
+</nav>
+
+
+<!-- ═══════════════ PAGE: HOME ═══════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-canvas"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="hero-poster-art" id="hero-art"><div class="hero-poster-shine"></div></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow"><span>Jetzt im Kino</span><span class="badge badge-hot">Neu</span></div>
+      <h1 class="hero-title">Dune:<br>Part Two</h1>
+      <div class="hero-meta">
+        <span class="star">★ 8.5</span>
+        <div class="dot"></div>
+        <span>2h 46min</span>
+        <div class="dot"></div>
+        <span>FSK 12</span>
+        <div class="dot"></div>
+        <span>Sci-Fi · Epos</span>
+      </div>
+      <p class="hero-desc">Paul Atreides vereint sich mit Chani und den Fremen im Rachefeldzug gegen die Verschwörer, die seine Familie zerstörten.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="go('detail')">Tickets kaufen</button>
+        <button class="trailer-btn">
+          <div class="play-circle">▶</div>
+          Trailer ansehen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Now Playing -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">Jetzt im Kino</h2>
+      <button class="link-btn">Alle Filme →</button>
+    </div>
+    <div class="film-grid">
+      <!-- 1 -->
+      <div class="film-card" onclick="go('detail')">
+        <div class="poster">
+          <div class="poster-bg" data-tmdb-id="693134" style="background:linear-gradient(150deg,#2d1b69,#11998e)"></div>
+          <div class="poster-title">Dune: Part Two</div>
+          <div class="card-overlay"><div class="play-btn">▶</div></div>
+          <div class="poster-badge"><span class="badge badge-hot">Top</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-meta-title">Dune: Part Two</div>
+          <div class="card-meta-sub"><span class="star">★ 8.5</span><span>2h 46m</span><span>FSK 12</span></div>
+        </div>
+      </div>
+      <!-- 2 -->
+      <div class="film-card" onclick="go('detail')">
+        <div class="poster">
+          <div class="poster-bg" data-tmdb-id="558449" style="background:linear-gradient(150deg,#3d0000,#c0392b)"></div>
+          <div class="poster-title">Gladiator II</div>
+          <div class="card-overlay"><div class="play-btn">▶</div></div>
+          <div class="poster-badge"><span class="badge badge-info">IMAX</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-meta-title">Gladiator II</div>
+          <div class="card-meta-sub"><span class="star">★ 7.7</span><span>2h 28m</span><span>FSK 16</span></div>
+        </div>
+      </div>
+      <!-- 3 -->
+      <div class="film-card" onclick="go('detail')">
+        <div class="poster">
+          <div class="poster-bg" data-tmdb-id="945961" style="background:linear-gradient(150deg,#0d1b2a,#2c3e50)"></div>
+          <div class="poster-title">Alien: Romulus</div>
+          <div class="card-overlay"><div class="play-btn">▶</div></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-meta-title">Alien: Romulus</div>
+          <div class="card-meta-sub"><span class="star">★ 7.2</span><span>1h 59m</span><span>FSK 16</span></div>
+        </div>
+      </div>
+      <!-- 4 -->
+      <div class="film-card" onclick="go('detail')">
+        <div class="poster">
+          <div class="poster-bg" data-tmdb-id="402431" style="background:linear-gradient(150deg,#134e5e,#71b280)"></div>
+          <div class="poster-title">Wicked</div>
+          <div class="card-overlay"><div class="play-btn">▶</div></div>
+          <div class="poster-badge"><span class="badge badge-new">Neu</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-meta-title">Wicked</div>
+          <div class="card-meta-sub"><span class="star">★ 7.6</span><span>2h 40m</span><span>FSK 6</span></div>
+        </div>
+      </div>
+      <!-- 5 -->
+      <div class="film-card" onclick="go('detail')">
+        <div class="poster">
+          <div class="poster-bg" data-tmdb-id="533535" style="background:linear-gradient(150deg,#1a1a2e,#4286f4)"></div>
+          <div class="poster-title">Deadpool & Wolverine</div>
+          <div class="card-overlay"><div class="play-btn">▶</div></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-meta-title">Deadpool & Wolverine</div>
+          <div class="card-meta-sub"><span class="star">★ 7.8</span><span>2h 8m</span><span>FSK 16</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coming Soon -->
+  <section style="padding: 0 60px 24px">
+    <div class="section-head">
+      <h2 class="section-title">Demnächst</h2>
+      <button class="link-btn">Alle →</button>
+    </div>
+  </section>
+  <div class="coming-strip">
+    <div class="coming-card">
+      <div class="coming-thumb">
+        <div class="coming-thumb-bg" data-tmdb-id="426063" style="background:linear-gradient(135deg,#1a0a2e,#eb265c)"></div>
+      </div>
+      <div class="coming-body">
+        <div class="coming-title">Nosferatu</div>
+        <div class="coming-date">Ab 24. April</div>
+        <div class="coming-genre">Horror · Gothic</div>
+      </div>
+    </div>
+    <div class="coming-card">
+      <div class="coming-thumb">
+        <div class="coming-thumb-bg" data-tmdb-id="297762" style="background:linear-gradient(135deg,#0a3d62,#60a3bc)"></div>
+      </div>
+      <div class="coming-body">
+        <div class="coming-title">Aquaman: Lost Kingdom</div>
+        <div class="coming-date">Ab 1. Mai</div>
+        <div class="coming-genre">Action · Abenteuer</div>
+      </div>
+    </div>
+    <div class="coming-card">
+      <div class="coming-thumb">
+        <div class="coming-thumb-bg" data-tmdb-id="346698" style="background:linear-gradient(135deg,#2d3561,#c05c7e)"></div>
+      </div>
+      <div class="coming-body">
+        <div class="coming-title">Furiosa</div>
+        <div class="coming-date">Ab 8. Mai</div>
+        <div class="coming-genre">Action · Post-Apokalypse</div>
+      </div>
+    </div>
+    <div class="coming-card">
+      <div class="coming-thumb">
+        <div class="coming-thumb-bg" data-tmdb-id="653346" style="background:linear-gradient(135deg,#1b4332,#52b788)"></div>
+      </div>
+      <div class="coming-body">
+        <div class="coming-title">Planet der Affen: New Kingdom</div>
+        <div class="coming-date">Ab 15. Mai</div>
+        <div class="coming-genre">Sci-Fi · Abenteuer</div>
+      </div>
+    </div>
+    <div class="coming-card">
+      <div class="coming-thumb">
+        <div class="coming-thumb-bg" data-tmdb-id="933260" style="background:linear-gradient(135deg,#4a0e0e,#f7971e)"></div>
+      </div>
+      <div class="coming-body">
+        <div class="coming-title">The Substance</div>
+        <div class="coming-date">Ab 22. Mai</div>
+        <div class="coming-genre">Horror · Body-Horror</div>
+      </div>
+    </div>
+  </div>
+  <div style="height:72px"></div>
+</div>
+
+
+<!-- ═══════════════ PAGE: DETAIL ═══════════════ -->
+<div class="page" id="page-detail">
+  <button class="back-btn" onclick="go('home')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    Alle Filme
+  </button>
+
+  <div class="detail-hero">
+    <div class="detail-bg">
+      <div class="detail-bg-canvas"></div>
+      <div class="orb detail-orb-1" style="position:absolute"></div>
+      <div class="orb detail-orb-2" style="position:absolute"></div>
+    </div>
+    <div class="detail-content">
+      <div class="detail-poster-wrap">
+        <div class="poster">
+          <div class="poster-bg" data-tmdb-id="693134" style="background:linear-gradient(150deg,#2d1b69,#11998e)"></div>
+        </div>
+      </div>
+      <div class="detail-info">
+        <h1 class="detail-title">Dune:<br>Part Two</h1>
+        <div class="detail-row">
+          <span class="detail-star">★ 8.5 <sub>(52k)</sub></span>
+          <div class="dot"></div>
+          <span style="font-size:14px;color:rgba(255,255,255,.5)">2h 46min</span>
+          <div class="dot"></div>
+          <span style="font-size:14px;color:rgba(255,255,255,.5)">FSK 12</span>
+          <span class="badge badge-info" style="margin-left:4px">IMAX</span>
+        </div>
+        <div class="detail-row">
+          <span class="tag">Sci-Fi</span>
+          <span class="tag">Epos</span>
+          <span class="tag">Drama</span>
+          <span class="tag">2024</span>
+        </div>
+        <p class="detail-desc">Paul Atreides vereint sich mit Chani und den Fremen im Rachefeldzug gegen die Verschwörer, die seine Familie zerstörten — und muss zwischen der Liebe seines Lebens und dem Schicksal des Universums wählen.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="showtimes">
+    <h2 class="showtimes-title">Vorstellung wählen</h2>
+    <div class="date-tabs">
+      <div class="date-tab active"><span class="day-label">Heute</span>17. Apr</div>
+      <div class="date-tab"><span class="day-label">Fr</span>18. Apr</div>
+      <div class="date-tab"><span class="day-label">Sa</span>19. Apr</div>
+      <div class="date-tab"><span class="day-label">So</span>20. Apr</div>
+      <div class="date-tab"><span class="day-label">Mo</span>21. Apr</div>
+      <div class="date-tab"><span class="day-label">Di</span>22. Apr</div>
+      <div class="date-tab"><span class="day-label">Mi</span>23. Apr</div>
+    </div>
+
+    <div class="st-group">
+      <div class="st-format-label">Standard</div>
+      <div class="st-pills">
+        <div class="st-pill" onclick="go('seats')"><div class="st-time">14:30</div><div class="st-avail">82 frei</div></div>
+        <div class="st-pill" onclick="go('seats')"><div class="st-time">17:00</div><div class="st-avail">54 frei</div></div>
+        <div class="st-pill" onclick="go('seats')"><div class="st-time">20:15</div><div class="st-avail">31 frei</div></div>
+        <div class="st-pill" onclick="go('seats')"><div class="st-time">22:45</div><div class="st-avail">67 frei</div></div>
+      </div>
+    </div>
+    <div class="st-group">
+      <div class="st-format-label">IMAX</div>
+      <div class="st-pills">
+        <div class="st-pill" onclick="go('seats')"><div class="st-time">15:45</div><div class="st-avail">12 frei</div><div class="st-fmt" style="color:var(--info)">IMAX</div></div>
+        <div class="st-pill" onclick="go('seats')"><div class="st-time">19:00</div><div class="st-avail">8 frei</div><div class="st-fmt" style="color:var(--info)">IMAX</div></div>
+      </div>
+    </div>
+    <div class="st-group">
+      <div class="st-format-label">OV — Original Version</div>
+      <div class="st-pills">
+        <div class="st-pill" onclick="go('seats')"><div class="st-time">21:30</div><div class="st-avail">45 frei</div><div class="st-fmt" style="color:rgba(255,255,255,.4)">OV</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ PAGE: SEATS ═══════════════ -->
+<div class="page" id="page-seats">
+  <div class="seats-wrap">
+    <div class="seats-main">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:32px">
+        <button class="btn-ghost" onclick="go('detail')" style="padding:9px 16px;font-size:13px;display:flex;align-items:center;gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Zurück
+        </button>
+        <div>
+          <div class="seats-page-title">Sitzplatz wählen</div>
+          <div class="seats-page-sub" style="margin-bottom:0">Dune: Part Two · 20:15 Uhr · Saal 7 · IMAX</div>
+        </div>
+      </div>
+
+      <div class="screen-wrap">
+        <div class="screen-bar"></div>
+        <div class="screen-lbl">Leinwand</div>
+      </div>
+
+      <div class="seat-map" id="seat-map"></div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,.14)"></div>Frei</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Ausgewählt</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,.04)"></div>Belegt</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(235,38,92,.35)"></div>Premium</div>
+      </div>
+    </div>
+
+    <div class="seats-sidebar">
+      <div class="sb-section">
+        <div class="sb-label">Film</div>
+        <div class="sb-title">Dune: Part Two</div>
+        <div class="sb-meta">Heute · 20:15 Uhr<br>Saal 7 · IMAX</div>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-section" style="flex:1">
+        <div class="sb-label">Ausgewählte Plätze</div>
+        <div class="seat-list" id="seat-list">
+          <div class="seat-empty">Noch keine Plätze gewählt</div>
+        </div>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-section">
+        <div class="price-row">
+          <span>Gesamt</span>
+          <span class="total" id="total">0,00 €</span>
+        </div>
+      </div>
+      <button class="btn-primary" id="seats-cta" onclick="go('checkout')" disabled style="width:100%;justify-content:center;margin-top:16px">
+        Weiter zur Kasse
+      </button>
+      <div class="sb-note">Plätze für 10 min reserviert</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ PAGE: CHECKOUT ═══════════════ -->
+<div class="page" id="page-checkout">
+  <div class="checkout-wrap">
+    <div class="checkout-form-col">
+      <button class="btn-ghost" onclick="go('seats')" style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;font-size:13px;margin-bottom:28px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Zurück
+      </button>
+      <h2 class="checkout-title">Kasse</h2>
+
+      <div class="form-section">
+        <div class="form-section-title">Kontaktdaten</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Vorname</label>
+            <input class="form-input" type="text" placeholder="Max">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nachname</label>
+            <input class="form-input" type="text" placeholder="Mustermann">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">E-Mail</label>
+          <input class="form-input" type="email" placeholder="max@beispiel.de">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Zahlung</div>
+        <div class="pay-opts">
+          <div class="pay-opt active" onclick="selectPay(this)"><span class="pay-icon">💳</span>Karte</div>
+          <div class="pay-opt" onclick="selectPay(this)"><span class="pay-icon">🅿️</span>PayPal</div>
+          <div class="pay-opt" onclick="selectPay(this)"><span class="pay-icon">🍎</span>Apple Pay</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kartennummer</label>
+          <input class="form-input" type="text" placeholder="0000 0000 0000 0000">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Gültig bis</label>
+            <input class="form-input" type="text" placeholder="MM / JJ">
+          </div>
+          <div class="form-group">
+            <label class="form-label">CVC</label>
+            <input class="form-input" type="text" placeholder="123">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Promo-Code</div>
+        <div class="promo-row">
+          <input class="form-input" type="text" placeholder="Code eingeben">
+          <button class="promo-btn">Einlösen</button>
+        </div>
+      </div>
+
+      <button class="btn-primary buy-btn" onclick="go('confirmation')">
+        Jetzt kaufen · 27,00 €
+      </button>
+      <div class="secure-note">🔒 Verschlüsselt & sicher · Tickets per E-Mail</div>
+    </div>
+
+    <div class="checkout-summary-col">
+      <div class="summary-card">
+        <div class="summary-card-title">Bestellübersicht</div>
+        <div class="summary-film-row">
+          <div class="summary-poster-wrap">
+            <div class="poster">
+              <div class="poster-bg" data-tmdb-id="693134" style="background:linear-gradient(150deg,#2d1b69,#11998e)"></div>
+            </div>
+          </div>
+          <div>
+            <div class="summary-film-title">Dune: Part Two</div>
+            <div class="summary-film-detail">Donnerstag, 17. April<br>20:15 Uhr · IMAX<br>UCI Bochum · Saal 7</div>
+          </div>
+        </div>
+        <div class="summary-line"><span>Reihe D, Platz 5</span><span>12,00 €</span></div>
+        <div class="summary-line"><span>Reihe D, Platz 6</span><span>12,00 €</span></div>
+        <div class="summary-line"><span>Buchungsgebühr</span><span>3,00 €</span></div>
+        <div class="summary-line total"><span>Gesamt</span><span class="amount">27,00 €</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ PAGE: CONFIRMATION ═══════════════ -->
+<div class="page" id="page-confirmation">
+  <div class="confirm-page">
+    <div class="confirm-content">
+      <div class="confirm-icon">✓</div>
+      <h2 class="confirm-title">Buchung bestätigt!</h2>
+      <p class="confirm-sub">Deine Tickets wurden an max@beispiel.de gesendet</p>
+
+      <div class="ticket">
+        <div class="ticket-top">
+          <div class="ticket-poster-wrap">
+            <div class="poster">
+              <div class="poster-bg" data-tmdb-id="693134" style="background:linear-gradient(150deg,#2d1b69,#11998e)"></div>
+            </div>
+          </div>
+          <div>
+            <div class="ticket-film-title">Dune: Part Two</div>
+            <div class="ticket-detail">
+              Do., 17. April 2026<br>
+              20:15 Uhr · IMAX<br>
+              UCI Bochum Ruhr Park · Saal 7
+            </div>
+          </div>
+        </div>
+        <div class="ticket-perf">
+          <div class="ticket-notch"></div>
+          <div class="ticket-dashed"></div>
+          <div class="ticket-notch"></div>
+        </div>
+        <div class="ticket-bottom">
+          <div class="qr" id="qr-code"></div>
+          <div class="ticket-seats-info">
+            <div class="ticket-seats-lbl">Plätze</div>
+            <div class="ticket-seats-val">D5 · D6</div>
+          </div>
+          <div class="ticket-price-block">
+            <div class="ticket-price-lbl">Gesamt</div>
+            <div class="ticket-price-val">27,00 €</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirm-actions">
+        <button class="btn-ghost">📅 Kalender</button>
+        <button class="btn-ghost">⬇ PDF</button>
+        <button class="btn-primary" onclick="go('home')">Zurück zur Startseite</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  /* ── TMDB Poster Loader ── */
+  const TMDB_KEY = '8bc01eb64fefd7e53f1ee77edd23602f';
+  const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
+  const posterCache = {};
+
+  async function fetchPoster(tmdbId) {
+    if (posterCache[tmdbId]) return posterCache[tmdbId];
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${TMDB_KEY}&language=de-DE`);
+      const data = await res.json();
+      const url = data.poster_path ? TMDB_IMG + data.poster_path : null;
+      posterCache[tmdbId] = url;
+      return url;
+    } catch { return null; }
+  }
+
+  function injectPoster(el, url) {
+    if (!url) return;
+    const img = document.createElement('img');
+    img.className = 'loading';
+    img.src = url;
+    img.onload = () => img.classList.remove('loading');
+    el.appendChild(img);
+  }
+
+  async function loadAllPosters() {
+    const elements = document.querySelectorAll('[data-tmdb-id]');
+    const ids = [...new Set([...elements].map(el => el.dataset.tmdbId))];
+    const urls = await Promise.all(ids.map(id => fetchPoster(id)));
+    const urlMap = Object.fromEntries(ids.map((id, i) => [id, urls[i]]));
+    elements.forEach(el => injectPoster(el, urlMap[el.dataset.tmdbId]));
+    // Hero poster
+    const heroUrl = urlMap['693134'];
+    if (heroUrl) {
+      const heroArt = document.getElementById('hero-art');
+      const img = document.createElement('img');
+      img.className = 'loading';
+      img.src = heroUrl.replace('w500', 'w780');
+      img.onload = () => img.classList.remove('loading');
+      heroArt.insertBefore(img, heroArt.firstChild);
+    }
+  }
+
+  loadAllPosters();
+
+  /* ── Nav scroll ── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > 60));
+  nav.classList.add('solid');
+
+  /* ── Magnetic button effect ── */
+  function initMagnetic() {
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+      btn.addEventListener('mousemove', e => {
+        const r = btn.getBoundingClientRect();
+        const x = e.clientX - r.left - r.width  / 2;
+        const y = e.clientY - r.top  - r.height / 2;
+        btn.style.transform = `translate(${x * 0.18}px, ${y * 0.22}px)`;
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+        btn.style.transition = 'transform .5s cubic-bezier(0.22,1,0.36,1)';
+      });
+      btn.addEventListener('mouseenter', () => {
+        btn.style.transition = 'transform .1s ease';
+      });
+    });
+  }
+  initMagnetic();
+
+
+  /* ── Page routing ── */
+  function go(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (page === 'seats') buildMap();
+    if (page === 'confirmation') buildQR();
+    setTimeout(initMagnetic, 50);
+  }
+
+  /* ── Date tab selection ── */
+  document.querySelectorAll('.date-tab').forEach(t =>
+    t.addEventListener('click', () => {
+      t.closest('.date-tabs').querySelectorAll('.date-tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+    })
+  );
+
+  /* ── Seat map ── */
+  const ROWS = ['A','B','C','D','E','F','G','H','I'];
+  const COLS = 14;
+  const PREMIUM = new Set(['D','E','F']);
+  const TAKEN = new Set(['A3','A4','B6','B7','C2','C11','D1','D13','E5','E6','E7','F9','F10','G4','G5','H8','H9','H10','I3','I12']);
+  let selected = new Set();
+  let mapBuilt = false;
+
+  function buildMap() {
+    if (mapBuilt) return;
+    mapBuilt = true;
+    const map = document.getElementById('seat-map');
+    ROWS.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'seat-row';
+      const lbl = document.createElement('div'); lbl.className = 'row-lbl'; lbl.textContent = r;
+      row.appendChild(lbl);
+      for (let i = 1; i <= COLS; i++) {
+        if (i === 8) { const a = document.createElement('div'); a.className = 'aisle'; row.appendChild(a); }
+        const id = r + i;
+        const s = document.createElement('div');
+        s.className = 'seat ' + (TAKEN.has(id) ? 'taken' : PREMIUM.has(r) ? 'premium' : 'free');
+        s.dataset.id = id; s.dataset.row = r;
+        if (!TAKEN.has(id)) s.addEventListener('click', () => toggleSeat(id, s, r));
+        row.appendChild(s);
+      }
+      const lbl2 = document.createElement('div'); lbl2.className = 'row-lbl'; lbl2.textContent = r;
+      row.appendChild(lbl2);
+      map.appendChild(row);
+    });
+  }
+
+  function toggleSeat(id, el, row) {
+    if (selected.has(id)) {
+      selected.delete(id);
+      el.classList.remove('selected');
+    } else {
+      if (selected.size >= 8) return;
+      selected.add(id);
+      el.classList.add('selected');
+    }
+    renderSidebar();
+  }
+
+  function renderSidebar() {
+    const list = document.getElementById('seat-list');
+    const total = document.getElementById('total');
+    const cta = document.getElementById('seats-cta');
+    if (selected.size === 0) {
+      list.innerHTML = '<div class="seat-empty">Noch keine Plätze gewählt</div>';
+      total.textContent = '0,00 €';
+      cta.disabled = true; cta.style.opacity = '.4';
+      return;
+    }
+    let sum = 0;
+    list.innerHTML = '';
+    [...selected].sort().forEach(id => {
+      const r = id[0]; const isPrem = PREMIUM.has(r);
+      const price = isPrem ? 14 : 11;
+      sum += price;
+      const item = document.createElement('div'); item.className = 'seat-item';
+      item.innerHTML = `<span>Reihe ${id[0]}, Platz ${id.slice(1)}${isPrem ? ' <span style="font-size:10px;color:var(--hot)">●</span>' : ''}</span><span class="price">${price},00 €</span>`;
+      list.appendChild(item);
+    });
+    total.textContent = sum.toFixed(2).replace('.', ',') + ' €';
+    cta.disabled = false; cta.style.opacity = '1';
+  }
+
+  /* ── Checkout payment ── */
+  function selectPay(el) {
+    el.closest('.pay-opts').querySelectorAll('.pay-opt').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  /* ── QR Code (simple pixel art) ── */
+  function buildQR() {
+    const qr = document.getElementById('qr-code');
+    if (qr.innerHTML) return;
+    const pattern = [
+      [1,1,1,1,1,1,1,0,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,1,0,1,0,0,0,0,0,1],
+      [1,0,1,1,1,0,1,0,1,0,1,1,1,0,1],
+      [1,0,1,1,1,0,1,0,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,1,0,1,0,0,0,0,0,1],
+      [1,1,1,1,1,1,1,0,1,1,1,1,1,1,1],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [1,0,1,1,0,1,0,1,0,1,0,1,1,0,1],
+      [0,1,0,0,1,0,1,0,1,0,1,0,0,1,0],
+    ];
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(15,4px);gap:1px;padding:4px;background:#fff;border-radius:4px;';
+    pattern.forEach(row => row.forEach(cell => {
+      const d = document.createElement('div');
+      d.style.cssText = `width:4px;height:4px;background:${cell ? '#000' : '#fff'}`;
+      grid.appendChild(d);
+    }));
+    qr.innerHTML = ''; qr.appendChild(grid);
+  }
+</script>
+</body>
+</html>
