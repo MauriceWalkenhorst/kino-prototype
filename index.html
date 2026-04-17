@@ -1025,24 +1025,24 @@
     <div class="st-group">
       <div class="st-format-label">Standard</div>
       <div class="st-pills">
-        <div class="st-pill" onclick="go('seats')"><div class="st-time">14:30</div><div class="st-avail">82 frei</div></div>
-        <div class="st-pill" onclick="go('seats')"><div class="st-time">17:00</div><div class="st-avail">54 frei</div></div>
-        <div class="st-pill" onclick="go('seats')"><div class="st-time">20:15</div><div class="st-avail">31 frei</div></div>
-        <div class="st-pill" onclick="go('seats')"><div class="st-time">22:45</div><div class="st-avail">67 frei</div></div>
+        <div class="st-pill" onclick="goBooking('14:30', 'Standard')"><div class="st-time">14:30</div><div class="st-avail">82 frei</div></div>
+        <div class="st-pill" onclick="goBooking('17:00', 'Standard')"><div class="st-time">17:00</div><div class="st-avail">54 frei</div></div>
+        <div class="st-pill" onclick="goBooking('20:15', 'Standard')"><div class="st-time">20:15</div><div class="st-avail">31 frei</div></div>
+        <div class="st-pill" onclick="goBooking('22:45', 'Standard')"><div class="st-time">22:45</div><div class="st-avail">67 frei</div></div>
       </div>
     </div>
     <div class="st-group">
       <div class="st-format-label">IMAX</div>
       <div class="st-pills">
-        <div class="st-pill" onclick="go('seats')"><div class="st-time">15:45</div><div class="st-avail">12 frei</div><div class="st-fmt" style="color:var(--info)">IMAX</div></div>
-        <div class="st-pill" onclick="go('seats')"><div class="st-time">19:00</div><div class="st-avail">8 frei</div><div class="st-fmt" style="color:var(--info)">IMAX</div></div>
+        <div class="st-pill" onclick="goBooking('15:45', 'IMAX')"><div class="st-time">15:45</div><div class="st-avail">12 frei</div><div class="st-fmt" style="color:var(--info)">IMAX</div></div>
+        <div class="st-pill" onclick="goBooking('19:00', 'IMAX')"><div class="st-time">19:00</div><div class="st-avail">8 frei</div><div class="st-fmt" style="color:var(--info)">IMAX</div></div>
       </div>
     </div>
     <div class="st-group">
       <div class="st-format-label">Englischer Originalton</div>
       <div class="st-pills">
-        <div class="st-pill" onclick="goOV('seats')"><div class="st-time">18:45</div><div class="st-avail">12 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
-        <div class="st-pill" onclick="goOV('seats')"><div class="st-time">21:30</div><div class="st-avail">45 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
+        <div class="st-pill" onclick="goBooking('18:45', '🇬🇧 OV (Englisch)', true)"><div class="st-time">18:45</div><div class="st-avail">12 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
+        <div class="st-pill" onclick="goBooking('21:30', '🇬🇧 OV (Englisch)', true)"><div class="st-time">21:30</div><div class="st-avail">45 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
       </div>
     </div>
   </div>
@@ -1060,7 +1060,7 @@
         </button>
         <div>
           <div class="seats-page-title">Sitzplatz wählen</div>
-          <div class="seats-page-sub" style="margin-bottom:0">Dune: Part Two · 21:30 Uhr · Saal 7 · 🇬🇧 OV (Englisch)</div>
+          <div class="seats-page-sub" style="margin-bottom:0">Dune: Part Two · <span class="dyn-time">21:30 Uhr</span> · Saal 7 · <span class="dyn-fmt">🇬🇧 OV (Englisch)</span></div>
         </div>
       </div>
 
@@ -1091,7 +1091,7 @@
       <div class="sb-section">
         <div class="sb-label">Film</div>
         <div class="sb-title">Dune: Part Two</div>
-        <div class="sb-meta">Heute · 21:30 Uhr<br>Saal 7 · 🇬🇧 OV (Englisch)</div>
+        <div class="sb-meta">Heute · <span class="dyn-time">21:30 Uhr</span><br>Saal 7 · <span class="dyn-fmt">🇬🇧 OV (Englisch)</span></div>
       </div>
       <div class="sb-divider"></div>
       <div class="sb-section" style="flex:1">
@@ -1192,7 +1192,7 @@
           </div>
           <div>
             <div class="summary-film-title">Dune: Part Two</div>
-            <div class="summary-film-detail">Donnerstag, 17. April<br>21:30 Uhr · 🇬🇧 OV (Englisch)<br>CINEX Bochum · Saal 7</div>
+            <div class="summary-film-detail">Donnerstag, 17. April<br><span class="dyn-time">21:30 Uhr</span> · <span class="dyn-fmt">🇬🇧 OV (Englisch)</span><br>CINEX Bochum · Saal 7</div>
           </div>
         </div>
         <div class="summary-line"><span>Reihe D, Platz 5</span><span>12,00 €</span></div>
@@ -1224,7 +1224,7 @@
             <div class="ticket-film-title">Dune: Part Two</div>
             <div class="ticket-detail">
               Do., 17. April 2026<br>
-              21:30 Uhr · 🇬🇧 OV (Englisch)<br>
+              <span class="dyn-time">21:30 Uhr</span> · <span class="dyn-fmt">🇬🇧 OV (Englisch)</span><br>
               CINEX Bochum Ruhr Park · Saal 7
             </div>
           </div>
@@ -1332,6 +1332,13 @@
   /* ── Page routing ── */
   let _nextIsOV = false;
 
+  function goBooking(time, format, isOV = false) {
+    _nextIsOV = isOV;
+    document.querySelectorAll('.dyn-time').forEach(el => el.textContent = time + ' Uhr');
+    document.querySelectorAll('.dyn-fmt').forEach(el => el.textContent = format);
+    go('seats');
+  }
+
   function go(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + page).classList.add('active');
@@ -1343,11 +1350,6 @@
     }
     if (page === 'confirmation') buildQR();
     setTimeout(initMagnetic, 50);
-  }
-
-  function goOV(page) {
-    _nextIsOV = true;
-    go(page);
   }
 
   /* ── Date tab selection ── */
