@@ -499,7 +499,7 @@
       height: 4px;
       background: linear-gradient(to right, transparent, var(--info), transparent);
       border-radius: 2px;
-      box-shadow: 0 0 24px rgba(0,146,210,.6);
+      box-shadow: 0 0 40px 10px rgba(0,146,210,.25), 0 0 80px 20px rgba(0,146,210,.15);
     }
     .screen-lbl { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,.25); }
 
@@ -508,13 +508,13 @@
     .row-lbl { width: 18px; text-align: center; font-size: 10px; color: rgba(255,255,255,.25); font-weight: 700; }
     .seat {
       width: 28px; height: 24px; border-radius: 4px 4px 2px 2px;
-      cursor: pointer; transition: all .1s; border: none; outline: none; position: relative;
+      cursor: pointer; transition: all .15s var(--spring); border: none; outline: none; position: relative;
     }
     .seat.free    { background: rgba(255,255,255,.14); }
-    .seat.free:hover { background: rgba(253,243,0,.45); transform: scaleY(1.06); }
+    .seat.free:hover { background: rgba(253,243,0,.45); transform: translateY(-4px) scale(1.1); box-shadow: 0 4px 12px rgba(253,243,0,.3); z-index: 10; }
     .seat.taken   { background: rgba(255,255,255,.04); cursor: not-allowed; }
     .seat.premium { background: rgba(235,38,92,.22); }
-    .seat.premium:hover { background: rgba(235,38,92,.45); }
+    .seat.premium:hover { background: rgba(235,38,92,.45); transform: translateY(-4px) scale(1.1); box-shadow: 0 4px 12px rgba(235,38,92,.3); z-index: 10; }
     .seat.selected { background: var(--accent) !important; }
     .seat.premium.selected { background: var(--hot) !important; }
     .aisle { width: 18px; }
@@ -684,6 +684,48 @@
 
     .confirm-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
+    /* ── UX HIGHLIGHTS (Trailer, Snacks, Wallets, Spinner) ── */
+    #trailer-modal {
+      position: fixed; inset: 0; background: #000; z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .4s ease;
+    }
+    #trailer-modal.active { opacity: 1; pointer-events: auto; }
+    #trailer-close {
+      position: absolute; top: 24px; right: 24px; background: rgba(255,255,255,.1);
+      border: none; color: #fff; width: 44px; height: 44px; border-radius: 50%;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .2s; z-index: 2001;
+    }
+    #trailer-close:hover { background: rgba(255,255,255,.2); }
+    .trailer-iframe-wrap { width: 100%; max-width: 1200px; aspect-ratio: 16/9; padding: 20px; }
+
+    .snack-row { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; margin-bottom: 32px; padding-bottom: 8px; }
+    .snack-row::-webkit-scrollbar { display: none; }
+    .snack-card {
+      flex: 0 0 140px; background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--r-lg); padding: 16px; cursor: pointer; text-align: center; transition: all .3s var(--spring);
+    }
+    .snack-card:hover { background: var(--glass-hover); transform: translateY(-4px); }
+    .snack-card.active { border-color: var(--accent); background: rgba(253,243,0,.1); }
+    .snack-icon { font-size: 32px; margin-bottom: 8px; display: inline-block; transition: transform .3s var(--spring); }
+    .snack-card:hover .snack-icon { transform: scale(1.15) rotate(5deg); }
+    .snack-title { font-size: 13px; font-weight: 900; margin-bottom: 2px; }
+    .snack-price { font-size: 12px; color: var(--accent); font-weight: 700; }
+
+    .wallet-btn {
+      background: #000; border: 1px solid rgba(255,255,255,.2); border-radius: 8px;
+      height: 44px; display: flex; align-items: center; justify-content: center;
+      padding: 0 16px; cursor: pointer; transition: all .2s;
+    }
+    .wallet-btn:hover { background: #111; border-color: rgba(255,255,255,.4); transform: translateY(-2px); }
+
+    .spinner {
+      width: 18px; height: 18px; border: 2px solid rgba(0,0,0,.2);
+      border-top-color: #000; border-radius: 50%; animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* ══════════════════════════════════════════
        MOBILE OPTIMIZATION (RESPONSIVE & POLISH)
     ══════════════════════════════════════════ */
@@ -730,13 +772,24 @@
       .date-tab { padding: 12px 18px; } /* larger touch targets */
       .st-pill { padding: 14px 20px; }
 
-      /* SEATS PAGE */
-      .seats-wrap { flex-direction: column; padding-top: 60px; }
+      /* SEATS PAGE (Sticky Cart) */
+      .seats-wrap { flex-direction: column; padding-top: 60px; padding-bottom: 100px; }
       .seats-main { padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-x: auto; }
-      .seats-page-title { text-align: center; }
-      .seats-page-sub { text-align: center; }
+      .seats-page-title, .seats-page-sub { text-align: center; }
       .seat-map { transform: scale(0.95); transform-origin: top center; margin-bottom: 20px; }
-      .seats-sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border); padding: 24px 20px; }
+      
+      .seats-sidebar { padding: 0; border: none; background: transparent; }
+      .seats-sidebar > *:not(.sb-sticky-mobile) { display: none; }
+      .sb-sticky-mobile {
+         display: flex; justify-content: space-between; align-items: center;
+         padding: 16px 20px; background: rgba(10,10,12,0.95); backdrop-filter: blur(10px);
+         border-top: 1px solid var(--border); position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+         box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+      }
+      .sb-sticky-mobile .sb-section { margin: 0; }
+      .sb-sticky-mobile .price-row { flex-direction: column; align-items: flex-start; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.6); }
+      .sb-sticky-mobile .price-row .total { font-size: 22px; color: var(--accent); line-height: 1; margin-top: 4px; }
+      #seats-cta { margin-top: 0 !important; width: auto !important; padding: 12px 24px; }
 
       /* CHECKOUT PAGE */
       .checkout-wrap { flex-direction: column; padding: 90px 20px 48px; gap: 32px; }
@@ -816,10 +869,10 @@
       <p class="hero-desc">Paul Atreides vereint sich mit Chani und den Fremen im Rachefeldzug gegen die Verschwörer, die seine Familie zerstörten.</p>
       <div class="hero-actions">
         <button class="btn-primary" onclick="go('detail')">Tickets kaufen</button>
-        <a href="https://www.youtube.com/watch?v=xI6whUDDVuU" target="_blank" rel="noopener noreferrer" class="trailer-btn">
+        <button onclick="openTrailer('xI6whUDDVuU')" class="trailer-btn">
           <div class="play-circle">▶</div>
           Trailer ansehen
-        </a>
+        </button>
         <a href="https://letterboxd.com/film/dune-part-two/" target="_blank" rel="noopener noreferrer" class="trailer-btn" style="margin-top:10px">
           <div class="play-circle" style="border-color:rgba(255,255,255,.3);padding:0;overflow:hidden;background:#202830">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1101,15 +1154,17 @@
         </div>
       </div>
       <div class="sb-divider"></div>
-      <div class="sb-section">
-        <div class="price-row">
-          <span>Gesamt</span>
-          <span class="total" id="total">0,00 €</span>
+      <div class="sb-sticky-mobile">
+        <div class="sb-section">
+          <div class="price-row">
+            <span>Gesamt</span>
+            <span class="total" id="total">0,00 €</span>
+          </div>
         </div>
+        <button class="btn-primary" id="seats-cta" onclick="go('checkout')" disabled style="width:100%;justify-content:center;margin-top:16px">
+          Weiter zur Kasse
+        </button>
       </div>
-      <button class="btn-primary" id="seats-cta" onclick="go('checkout')" disabled style="width:100%;justify-content:center;margin-top:16px">
-        Weiter zur Kasse
-      </button>
       <div class="sb-note">Plätze für 10 min reserviert</div>
     </div>
   </div>
@@ -1175,8 +1230,29 @@
         </div>
       </div>
 
-      <button class="btn-primary buy-btn" onclick="go('confirmation')">
-        Jetzt kaufen · 27,00 €
+      <div class="form-section">
+        <div class="form-section-title">Snacks & Getränke hinzufügen</div>
+        <div class="snack-row">
+          <div class="snack-card" onclick="toggleSnack('popcorn', 6.50, 'Popcorn Groß', this)">
+            <span class="snack-icon">🍿</span>
+            <div class="snack-title">Popcorn Groß</div>
+            <div class="snack-price">+ 6,50 €</div>
+          </div>
+          <div class="snack-card" onclick="toggleSnack('nachos', 7.00, 'Nachos & Dip', this)">
+            <span class="snack-icon">🧀</span>
+            <div class="snack-title">Nachos & Dip</div>
+            <div class="snack-price">+ 7,00 €</div>
+          </div>
+          <div class="snack-card" onclick="toggleSnack('cola', 4.50, 'Cola 0,5l', this)">
+            <span class="snack-icon">🥤</span>
+            <div class="snack-title">Cola 0,5l</div>
+            <div class="snack-price">+ 4,50 €</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary buy-btn" id="buy-btn" onclick="processPayment(this)">
+        Jetzt kaufen · 0,00 €
       </button>
       <div class="secure-note">🔒 Verschlüsselt & sicher · Tickets per E-Mail</div>
     </div>
@@ -1195,10 +1271,10 @@
             <div class="summary-film-detail">Donnerstag, 17. April<br><span class="dyn-time">21:30 Uhr</span> · <span class="dyn-fmt">🇬🇧 OV (Englisch)</span><br>CINEX Bochum · Saal 7</div>
           </div>
         </div>
-        <div class="summary-line"><span>Reihe D, Platz 5</span><span>12,00 €</span></div>
-        <div class="summary-line"><span>Reihe D, Platz 6</span><span>12,00 €</span></div>
-        <div class="summary-line"><span>Buchungsgebühr</span><span>3,00 €</span></div>
-        <div class="summary-line total"><span>Gesamt</span><span class="amount">27,00 €</span></div>
+        <div id="checkout-items">
+          <!-- Dynamic seats & snacks will render here -->
+        </div>
+        <div class="summary-line total"><span>Gesamt</span><span class="amount" id="checkout-total">0,00 €</span></div>
       </div>
     </div>
   </div>
@@ -1238,15 +1314,25 @@
           <div class="qr" id="qr-code"></div>
           <div class="ticket-seats-info">
             <div class="ticket-seats-lbl">Plätze</div>
-            <div class="ticket-seats-val">D5 · D6</div>
+            <div class="ticket-seats-val" id="ticket-seats-val">D5 · D6</div>
           </div>
           <div class="ticket-price-block">
             <div class="ticket-price-lbl">Gesamt</div>
-            <div class="ticket-price-val">27,00 €</div>
+            <div class="ticket-price-val" id="ticket-price-val">0,00 €</div>
           </div>
         </div>
       </div>
 
+      <div class="confirm-actions" style="margin-bottom: 24px;">
+        <div class="wallet-btn" style="background:#000; color:#fff; gap:8px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16 4h-2a2 2 0 0 0-4 0H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-4 0a1 1 0 0 1 2 0h-2zm4 16H8V6h2v2h4V6h2v14z"/></svg>
+          <span style="font-size:14px; font-weight:700">Apple Wallet</span>
+        </div>
+        <div class="wallet-btn" style="background:#111; color:#fff; gap:8px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v16H4V4zm2 4v8h12V8H6z"/></svg>
+          <span style="font-size:14px; font-weight:700">Google Pay</span>
+        </div>
+      </div>
       <div class="confirm-actions">
         <button class="btn-ghost">📅 Kalender</button>
         <button class="btn-ghost">⬇ PDF</button>
@@ -1256,6 +1342,15 @@
   </div>
 </div>
 
+<!-- Trailer Modal Overlay -->
+<div id="trailer-modal">
+  <button id="trailer-close" aria-label="Trailer schließen">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="trailer-iframe-wrap">
+    <iframe id="trailer-iframe" width="100%" height="100%" src="" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  </div>
+</div>
 
 <script>
   /* ── TMDB Poster Loader ── */
@@ -1404,6 +1499,8 @@
     renderSidebar();
   }
 
+  let baseTicketPrice = 0;
+
   function renderSidebar() {
     const list = document.getElementById('seat-list');
     const total = document.getElementById('total');
@@ -1424,9 +1521,80 @@
       item.innerHTML = `<span>Reihe ${id[0]}, Platz ${id.slice(1)}${isPrem ? ' <span style="font-size:10px;color:var(--hot)">●</span>' : ''}</span><span class="price">${price},00 €</span>`;
       list.appendChild(item);
     });
+    baseTicketPrice = sum;
     total.textContent = sum.toFixed(2).replace('.', ',') + ' €';
     cta.disabled = false; cta.style.opacity = '1';
+    if (typeof renderCheckoutSummary === 'function') renderCheckoutSummary();
   }
+
+  /* ── Checkout & UX Features ── */
+  let activeSnacks = {};
+  
+  function getCartTotal() {
+    let total = baseTicketPrice + 3.00; // Gebühr
+    for(let k in activeSnacks) total += activeSnacks[k].price;
+    return total;
+  }
+
+  function toggleSnack(id, price, name, el) {
+    el.classList.toggle('active');
+    if (el.classList.contains('active')) {
+      activeSnacks[id] = {price, name};
+    } else {
+      delete activeSnacks[id];
+    }
+    renderCheckoutSummary();
+  }
+
+  function renderCheckoutSummary() {
+    const container = document.getElementById('checkout-items');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    [...selected].sort().forEach(id => {
+      const p = PREMIUM.has(id[0]) ? 14 : 11;
+      container.innerHTML += `<div class="summary-line"><span>Reihe ${id[0]}, Platz ${id.slice(1)}</span><span>${p.toFixed(2).replace('.',',')} €</span></div>`;
+    });
+    
+    for(let k in activeSnacks) {
+      container.innerHTML += `<div class="summary-line"><span>${activeSnacks[k].name}</span><span>${activeSnacks[k].price.toFixed(2).replace('.',',')} €</span></div>`;
+    }
+    container.innerHTML += `<div class="summary-line"><span>Buchungsgebühr</span><span>3,00 €</span></div>`;
+    
+    const total = getCartTotal();
+    const totalStr = total.toFixed(2).replace('.',',') + ' €';
+    document.getElementById('checkout-total').textContent = totalStr;
+    const buyBtn = document.getElementById('buy-btn');
+    if (buyBtn) buyBtn.innerHTML = `Jetzt kaufen · ${totalStr}`;
+  }
+
+  function processPayment(btn) {
+    if (selected.size === 0) return;
+    btn.innerHTML = '<div class="spinner" style="display:inline-block; vertical-align:middle; margin-right:8px"></div> Zahlung läuft...';
+    btn.style.pointerEvents = 'none';
+    setTimeout(() => {
+      btn.innerHTML = 'Jetzt kaufen';
+      btn.style.pointerEvents = 'auto';
+      
+      // Update ticket
+      document.getElementById('ticket-seats-val').textContent = [...selected].sort().join(' · ');
+      document.getElementById('ticket-price-val').textContent = getCartTotal().toFixed(2).replace('.',',') + ' €';
+      
+      go('confirmation');
+    }, 1500);
+  }
+
+  function openTrailer(ytId) {
+    const modal = document.getElementById('trailer-modal');
+    const iframe = document.getElementById('trailer-iframe');
+    iframe.src = 'https://www.youtube-nocookie.com/embed/' + ytId + '?autoplay=1&rel=0';
+    modal.classList.add('active');
+  }
+  
+  document.getElementById('trailer-close').addEventListener('click', () => {
+    document.getElementById('trailer-modal').classList.remove('active');
+    document.getElementById('trailer-iframe').src = '';
+  });
 
   /* ── Checkout payment ── */
   function selectPay(el) {
