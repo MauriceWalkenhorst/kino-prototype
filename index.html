@@ -496,7 +496,7 @@
     .screen-bar {
       width: 60%; margin: 0 auto 10px;
       height: 4px;
-      background: linear-gradient(to right, transparent, var(--info), transparent);
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
       border-radius: 2px;
       box-shadow: 0 0 40px 10px rgba(0,146,210,.25), 0 0 80px 20px rgba(0,146,210,.15);
     }
@@ -515,7 +515,7 @@
     .seat.premium { background: rgba(235,38,92,.22); }
     .seat.premium:hover { background: rgba(235,38,92,.45); transform: translateY(-4px) scale(1.1); box-shadow: 0 4px 12px rgba(235,38,92,.3); z-index: 10; }
     .seat.selected { background: var(--accent) !important; }
-    .seat.premium.selected { background: var(--hot) !important; }
+    .seat.premium.selected { background: var(--accent) !important; }
     .aisle { width: 18px; }
 
     .legend {
@@ -1521,7 +1521,7 @@
       const price = isPrem ? 14 : 11;
       sum += price;
       const item = document.createElement('div'); item.className = 'seat-item';
-      item.innerHTML = `<span>Reihe ${id[0]}, Platz ${id.slice(1)}${isPrem ? ' <span style="font-size:10px;color:var(--hot)">●</span>' : ''}</span><span class="price">${price},00 €</span>`;
+      item.innerHTML = `<span>Reihe ${id[0]}, Platz ${id.slice(1)}${isPrem ? ' <span style="font-size:10px;color:rgba(255,255,255,0.5)">●</span>' : ''}</span><span class="price">${price},00 €</span>`;
       list.appendChild(item);
     });
     baseTicketPrice = sum;
