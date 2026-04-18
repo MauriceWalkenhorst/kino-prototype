@@ -1339,50 +1339,61 @@
 </div>
 
 <script>
-  /* ── TMDB Poster Loader ── */
+  /* ── TMDB ── */
   const TMDB_KEY = '8bc01eb64fefd7e53f1ee77edd23602f';
-  const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
-  const posterCache = {};
+  const tmdbCache = {};
 
-  async function fetchPoster(tmdbId) {
-    if (posterCache[tmdbId]) return posterCache[tmdbId];
+  async function fetchTmdb(tmdbId) {
+    const id = String(tmdbId);
+    if (tmdbCache[id]) return tmdbCache[id];
     try {
-      const res = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${TMDB_KEY}&language=de-DE`);
+      const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_KEY}&language=de-DE`);
       const data = await res.json();
-      const url = data.poster_path ? TMDB_IMG + data.poster_path : null;
-      posterCache[tmdbId] = url;
-      return url;
-    } catch { return null; }
+      tmdbCache[id] = {
+        poster:   data.poster_path   ? `https://image.tmdb.org/t/p/w500${data.poster_path}`   : null,
+        backdrop: data.backdrop_path ? `https://image.tmdb.org/t/p/w1280${data.backdrop_path}` : null,
+      };
+    } catch {
+      tmdbCache[id] = { poster: null, backdrop: null };
+    }
+    return tmdbCache[id];
   }
 
-  function injectPoster(el, url) {
+  function injectImg(el, url, sizeSrc) {
     if (!url) return;
+    const src = sizeSrc ? url.replace('w500', sizeSrc) : url;
     const img = document.createElement('img');
     img.className = 'loading';
-    img.src = url;
+    img.src = src;
     img.onload = () => img.classList.remove('loading');
     el.appendChild(img);
   }
 
-  async function loadAllPosters() {
-    const elements = document.querySelectorAll('[data-tmdb-id]');
-    const ids = [...new Set([...elements].map(el => el.dataset.tmdbId))];
-    const urls = await Promise.all(ids.map(id => fetchPoster(id)));
-    const urlMap = Object.fromEntries(ids.map((id, i) => [id, urls[i]]));
-    elements.forEach(el => injectPoster(el, urlMap[el.dataset.tmdbId]));
-    // Hero poster
-    const heroUrl = urlMap['693134'];
-    if (heroUrl) {
+  async function loadAllTmdb() {
+    const els = document.querySelectorAll('[data-tmdb-id]');
+    const ids = [...new Set([...els].map(el => el.dataset.tmdbId))];
+    await Promise.all(ids.map(id => fetchTmdb(id)));
+
+    els.forEach(el => {
+      const d = tmdbCache[el.dataset.tmdbId];
+      if (d?.poster) injectImg(el, d.poster);
+    });
+
+    const heroData = tmdbCache['693134'];
+    if (heroData?.poster) {
       const heroArt = document.getElementById('hero-art');
-      const img = document.createElement('img');
-      img.className = 'loading';
-      img.src = heroUrl.replace('w500', 'w780');
-      img.onload = () => img.classList.remove('loading');
-      heroArt.insertBefore(img, heroArt.firstChild);
+      const existing = heroArt.querySelector('img');
+      if (!existing) injectImg(heroArt, heroData.poster, 'w780');
+    }
+
+    if (heroData?.backdrop) {
+      const backdropEl = document.getElementById('hero-backdrop');
+      backdropEl.src = heroData.backdrop;
+      backdropEl.onload = () => backdropEl.classList.add('loaded');
     }
   }
 
-  loadAllPosters();
+  loadAllTmdb();
 
   /* ── Nav scroll ── */
   const nav = document.getElementById('nav');
