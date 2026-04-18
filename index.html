@@ -195,13 +195,13 @@
         linear-gradient(to right, #000 0%, rgba(0,0,0,0) 50%),
         linear-gradient(to top,   #000 0%, rgba(0,0,0,0) 55%);
     }
-    /* Glowing orbs */
-    .orb {
-      position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
+    .hero-backdrop {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; object-fit: cover;
+      opacity: 0; transition: opacity 1.2s ease;
+      z-index: 0;
     }
-    .orb-1 { width: 500px; height: 500px; background: var(--hot);   opacity: .18; top: -100px; right: 15%; }
-    .orb-2 { width: 400px; height: 400px; background: var(--info);  opacity: .2;  bottom: 5%;  right: 5%;  }
-    .orb-3 { width: 250px; height: 250px; background: var(--accent); opacity: .08; top: 40%;   right: 38%; }
+    .hero-backdrop.loaded { opacity: 1; }
     /* Poster placeholder art */
     .hero-poster-art {
       position: absolute; right: 8%; top: 50%; transform: translateY(-50%);
@@ -209,19 +209,6 @@
       box-shadow: 0 40px 120px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.08);
       z-index: 1;
       animation: float 6s ease-in-out infinite;
-    }
-    .hero-poster-art::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(160deg, #2d1b69 0%, #11998e 55%, #eb265c 100%);
-    }
-    .hero-poster-art::after {
-      content: 'DUNE:\A PART TWO';
-      white-space: pre;
-      position: absolute; bottom: 28px; left: 24px; right: 24px;
-      font-size: 28px; font-weight: 900; letter-spacing: -1px;
-      line-height: 1; text-transform: uppercase; color: #fff;
-      text-shadow: 0 2px 20px rgba(0,0,0,.5);
     }
     .hero-poster-shine {
       position: absolute; inset: 0;
@@ -392,8 +379,6 @@
         linear-gradient(to top,   #000 0%,  rgba(0,0,0,.1) 55%),
         linear-gradient(to right, #000 0%, rgba(0,0,0,.0) 65%);
     }
-    .detail-orb-1 { width: 600px; height: 600px; background: var(--hot); opacity: .15; top: -150px; right: 10%; }
-    .detail-orb-2 { width: 400px; height: 400px; background: var(--info); opacity: .18; bottom: 0; right: 20%; }
     .detail-content {
       position: relative; z-index: 2; padding: 48px 60px;
       display: flex; gap: 36px; align-items: flex-end; width: 100%;
@@ -851,11 +836,12 @@
 
   <!-- Hero -->
   <div class="hero">
+    <img class="hero-backdrop" id="hero-backdrop" src="" alt="">
     <div class="hero-canvas"></div>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="hero-poster-art" id="hero-art"><div class="hero-poster-shine"></div></div>
+    <div class="hero-poster-art" id="hero-art">
+      <div class="poster-bg" id="hero-poster-bg" style="background:linear-gradient(160deg,#2d1b69 0%,#11998e 55%,#eb265c 100%)"></div>
+      <div class="hero-poster-shine"></div>
+    </div>
     <div class="hero-content">
       <div class="hero-eyebrow"><span>Jetzt im Kino</span><span class="badge badge-mono">Neu</span></div>
       <h1 class="hero-title">Dune:<br>Part Two</h1>
@@ -1035,8 +1021,6 @@
   <div class="detail-hero">
     <div class="detail-bg">
       <div class="detail-bg-canvas"></div>
-      <div class="orb detail-orb-1" style="position:absolute"></div>
-      <div class="orb detail-orb-2" style="position:absolute"></div>
     </div>
     <div class="detail-content">
       <div class="detail-poster-wrap">
