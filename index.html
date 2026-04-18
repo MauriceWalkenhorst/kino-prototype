@@ -72,7 +72,7 @@
       border-bottom: 1px solid transparent;
     }
     nav.solid {
-      background: rgba(0,0,0,0.88);
+      background: rgba(8,8,10,0.92);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom-color: var(--border);
@@ -272,9 +272,9 @@
     .film-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
     .film-card {
       cursor: pointer; border-radius: var(--r-lg);
-      overflow: hidden; transition: transform .3s;
+      overflow: hidden; transition: transform .3s var(--spring);
     }
-    .film-card:hover { transform: translateY(-6px); }
+    .film-card:hover { transform: scale(1.03); }
     .film-card:hover .card-overlay { opacity: 1; }
     .poster {
       aspect-ratio: 2/3; position: relative; overflow: hidden; border-radius: var(--r-lg);
@@ -320,7 +320,7 @@
     .card-meta { padding: 10px 2px; }
     .card-meta-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
     .card-meta-sub {
-      font-size: 12px; color: rgba(255,255,255,.45);
+      font-size: 12px; color: rgba(255,255,255,0.40);
       display: flex; gap: 8px;
     }
     .card-meta-sub .star { color: var(--accent); font-weight: 700; }
@@ -355,7 +355,7 @@
     .coming-body { padding: 14px 16px; background: #0d0d0d; }
     .coming-title { font-size: 14px; font-weight: 900; margin-bottom: 4px; }
     .coming-date { font-size: 12px; color: var(--accent); font-weight: 700; }
-    .coming-genre { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 3px; }
+    .coming-genre { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 3px; }
 
     /* ══════════════════════════════════════════
        PAGE 2: FILM DETAIL
