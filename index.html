@@ -883,7 +883,7 @@
     </div>
     <div class="film-grid">
       <!-- 1 -->
-      <div class="film-card" onclick="go('detail')">
+      <div class="film-card" onclick="setFilm('dune-2'); go('detail')">
         <div class="poster">
           <div class="poster-bg" data-tmdb-id="693134" style="background:linear-gradient(150deg,#2d1b69,#11998e)"></div>
           <div class="poster-title">Dune: Part Two</div>
@@ -896,7 +896,7 @@
         </div>
       </div>
       <!-- 2 -->
-      <div class="film-card" onclick="go('detail')">
+      <div class="film-card" onclick="setFilm('gladiator-2'); go('detail')">
         <div class="poster">
           <div class="poster-bg" data-tmdb-id="558449" style="background:linear-gradient(150deg,#3d0000,#c0392b)"></div>
           <div class="poster-title">Gladiator II</div>
@@ -909,7 +909,7 @@
         </div>
       </div>
       <!-- 3 -->
-      <div class="film-card" onclick="go('detail')">
+      <div class="film-card" onclick="setFilm('alien-romulus'); go('detail')">
         <div class="poster">
           <div class="poster-bg" data-tmdb-id="945961" style="background:linear-gradient(150deg,#0d1b2a,#2c3e50)"></div>
           <div class="poster-title">Alien: Romulus</div>
@@ -921,7 +921,7 @@
         </div>
       </div>
       <!-- 4 -->
-      <div class="film-card" onclick="go('detail')">
+      <div class="film-card" onclick="setFilm('wicked'); go('detail')">
         <div class="poster">
           <div class="poster-bg" data-tmdb-id="402431" style="background:linear-gradient(150deg,#134e5e,#71b280)"></div>
           <div class="poster-title">Wicked</div>
@@ -934,7 +934,7 @@
         </div>
       </div>
       <!-- 5 -->
-      <div class="film-card" onclick="go('detail')">
+      <div class="film-card" onclick="setFilm('deadpool'); go('detail')">
         <div class="poster">
           <div class="poster-bg" data-tmdb-id="533535" style="background:linear-gradient(150deg,#1a1a2e,#4286f4)"></div>
           <div class="poster-title">Deadpool & Wolverine</div>
@@ -1029,22 +1029,22 @@
         </div>
       </div>
       <div class="detail-info">
-        <h1 class="detail-title">Dune:<br>Part Two</h1>
+        <h1 class="detail-title" id="detail-title">Dune:<br>Part Two</h1>
         <div class="detail-row">
-          <span class="detail-star">★ 8.5 <sub>(52k)</sub></span>
+          <span class="detail-star" id="detail-star">★ 8.5 <sub>(52k)</sub></span>
           <div class="dot"></div>
           <span style="font-size:14px;color:rgba(255,255,255,.5)">2h 46min</span>
           <div class="dot"></div>
           <span style="font-size:14px;color:rgba(255,255,255,.5)">FSK 12</span>
           <span class="badge badge-outline" style="margin-left:4px">IMAX</span>
         </div>
-        <div class="detail-row">
+        <div class="detail-row" id="detail-tags">
           <span class="tag">Sci-Fi</span>
           <span class="tag">Epos</span>
           <span class="tag">Drama</span>
           <span class="tag">2024</span>
         </div>
-        <p class="detail-desc">Paul Atreides vereint sich mit Chani und den Fremen im Rachefeldzug gegen die Verschwörer, die seine Familie zerstörten — und muss zwischen der Liebe seines Lebens und dem Schicksal des Universums wählen.</p>
+        <p class="detail-desc" id="detail-desc">Paul Atreides vereint sich mit Chani und den Fremen im Rachefeldzug gegen die Verschwörer, die seine Familie zerstörten — und muss zwischen der Liebe seines Lebens und dem Schicksal des Universums wählen.</p>
       </div>
     </div>
   </div>
@@ -1061,6 +1061,7 @@
       <div class="date-tab"><span class="day-label">Mi</span>23. Apr</div>
     </div>
 
+    <div id="detail-showtimes-groups">
     <div class="st-group">
       <div class="st-format-label">Standard</div>
       <div class="st-pills">
@@ -1083,6 +1084,7 @@
         <div class="st-pill" onclick="goBooking('18:45', '🇬🇧 OV (Englisch)', true)"><div class="st-time">18:45</div><div class="st-avail">12 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
         <div class="st-pill" onclick="goBooking('21:30', '🇬🇧 OV (Englisch)', true)"><div class="st-time">21:30</div><div class="st-avail">45 frei</div><div class="st-fmt" style="color:var(--accent)">🇬🇧 OV</div></div>
       </div>
+    </div>
     </div>
   </div>
 </div>
@@ -1393,7 +1395,208 @@
     }
   }
 
-  loadAllTmdb();
+  /* ── Film Data ── */
+  const FILMS = [
+    {
+      id: 'dune-2',
+      title: 'Dune:<br>Part Two',
+      titleShort: 'Dune: Part Two',
+      tmdbId: 693134,
+      rating: 8.5, votes: '52k',
+      duration: '2h 46min', fsk: 12,
+      badge: 'Top', imax: true, isNew: false,
+      genres: ['Sci-Fi', 'Epos', 'Drama'],
+      year: 2024,
+      desc: 'Paul Atreides vereint sich mit Chani und den Fremen im Rachefeldzug gegen die Verschwörer, die seine Familie zerstörten — und muss zwischen der Liebe seines Lebens und dem Schicksal des Universums wählen.',
+      trailerYtId: 'xI6whUDDVuU',
+      gradient: 'linear-gradient(150deg,#2d1b69,#11998e)',
+      showtimes: {
+        standard: [{ time:'14:30', seats:82 },{ time:'17:00', seats:54 },{ time:'20:15', seats:31 },{ time:'22:45', seats:67 }],
+        imax:     [{ time:'15:45', seats:12 },{ time:'19:00', seats:8 }],
+        ov:       [{ time:'21:30', seats:44 }],
+      },
+    },
+    {
+      id: 'gladiator-2',
+      title: 'Gladiator II',
+      titleShort: 'Gladiator II',
+      tmdbId: 558449,
+      rating: 7.7, votes: '38k',
+      duration: '2h 28min', fsk: 16,
+      badge: null, imax: true, isNew: false,
+      genres: ['Action', 'Historienfilm', 'Drama'],
+      year: 2024,
+      desc: 'Jahrzehnte nach dem Tod von Maximus kämpft Lucius, einst ein freier Mann und nun ein Sklave, in der Arena ums Überleben — und enthüllt dabei die dunklen Geheimnisse seiner eigenen Vergangenheit.',
+      trailerYtId: 'oS7Sm_JSGZ8',
+      gradient: 'linear-gradient(150deg,#3d0000,#c0392b)',
+      showtimes: {
+        standard: [{ time:'13:15', seats:71 },{ time:'16:30', seats:49 },{ time:'19:45', seats:22 }],
+        imax:     [{ time:'14:00', seats:18 },{ time:'20:00', seats:5 }],
+        ov:       [],
+      },
+    },
+    {
+      id: 'alien-romulus',
+      title: 'Alien:<br>Romulus',
+      titleShort: 'Alien: Romulus',
+      tmdbId: 945961,
+      rating: 7.2, votes: '29k',
+      duration: '1h 59min', fsk: 16,
+      badge: null, imax: false, isNew: false,
+      genres: ['Horror', 'Sci-Fi', 'Thriller'],
+      year: 2024,
+      desc: 'Eine Gruppe junger Weltraum-Kolonisten gerät bei der Erkundung einer verlassenen Raumstation in eine erschreckende Begegnung mit der gefährlichsten Lebensform des Universums.',
+      trailerYtId: 'lqBb4pWq3pA',
+      gradient: 'linear-gradient(150deg,#0d1b2a,#2c3e50)',
+      showtimes: {
+        standard: [{ time:'15:00', seats:63 },{ time:'17:45', seats:41 },{ time:'21:00', seats:28 },{ time:'23:15', seats:55 }],
+        imax:     [],
+        ov:       [{ time:'20:30', seats:37 }],
+      },
+    },
+    {
+      id: 'wicked',
+      title: 'Wicked',
+      titleShort: 'Wicked',
+      tmdbId: 402431,
+      rating: 7.6, votes: '44k',
+      duration: '2h 40min', fsk: 6,
+      badge: null, imax: false, isNew: true,
+      genres: ['Musical', 'Fantasy', 'Drama'],
+      year: 2024,
+      desc: 'Elphaba und Glinda, zwei ungleiche Studentinnen in der Welt von Oz, verbinden sich in einer außergewöhnlichen Freundschaft — bevor das Schicksal sie auf entgegengesetzte Seiten eines epischen Konflikts treibt.',
+      trailerYtId: '2rHMVBDI4FU',
+      gradient: 'linear-gradient(150deg,#134e5e,#71b280)',
+      showtimes: {
+        standard: [{ time:'14:00', seats:88 },{ time:'17:30', seats:61 },{ time:'20:45', seats:34 }],
+        imax:     [],
+        ov:       [{ time:'16:00', seats:52 },{ time:'21:15', seats:29 }],
+      },
+    },
+    {
+      id: 'deadpool',
+      title: 'Deadpool &<br>Wolverine',
+      titleShort: 'Deadpool & Wolverine',
+      tmdbId: 533535,
+      rating: 7.8, votes: '61k',
+      duration: '2h 8min', fsk: 16,
+      badge: null, imax: false, isNew: false,
+      genres: ['Action', 'Komödie', 'Superhelden'],
+      year: 2024,
+      desc: 'Wade Wilson, besser bekannt als Deadpool, wird in das Marvel Cinematic Universe katapultiert und trifft auf eine sehr mürrische Version von Wolverine — mit explosiven Folgen.',
+      trailerYtId: '73_1biulkYk',
+      gradient: 'linear-gradient(150deg,#1a1a2e,#4286f4)',
+      showtimes: {
+        standard: [{ time:'13:45', seats:77 },{ time:'16:15', seats:53 },{ time:'19:30', seats:19 },{ time:'22:00', seats:42 }],
+        imax:     [],
+        ov:       [],
+      },
+    },
+  ];
+
+  let currentFilmId = 'dune-2';
+
+  function buildBadges(f) {
+    let b = '';
+    if (f.badge)   b += `<span class="badge badge-mono">${f.badge}</span>`;
+    if (f.isNew)   b += `<span class="badge badge-outline">Neu</span>`;
+    if (f.imax)    b += `<span class="badge badge-outline">IMAX</span>`;
+    return b;
+  }
+
+  function buildShowtimes(f) {
+    const container = document.getElementById('detail-showtimes-groups');
+    if (!container) return;
+    const groups = [];
+    if (f.showtimes.standard.length) groups.push({ label: 'Standard', key: 'standard', fmt: 'Standard' });
+    if (f.showtimes.imax.length)     groups.push({ label: 'IMAX',     key: 'imax',     fmt: 'IMAX' });
+    if (f.showtimes.ov.length)       groups.push({ label: 'OV (Englisch)', key: 'ov', fmt: '🇬🇧 OV (Englisch)' });
+
+    container.innerHTML = groups.map(g => `
+      <div class="st-group">
+        <div class="st-format-label">${g.label}</div>
+        <div class="st-pills">
+          ${f.showtimes[g.key].map(s => `
+            <div class="st-pill" onclick="goBooking('${s.time}', '${g.fmt}', ${g.key === 'ov'})">
+              <div class="st-time">${s.time}</div>
+              <div class="st-avail">${s.seats} frei</div>
+              ${g.key !== 'standard' ? `<div class="st-fmt">${g.label}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function updateDetailPage(f) {
+    document.getElementById('detail-title').innerHTML = f.title;
+    document.getElementById('detail-star').innerHTML = `★ ${f.rating} <sub>(${f.votes})</sub>`;
+    document.getElementById('detail-desc').textContent = f.desc;
+    document.getElementById('detail-tags').innerHTML =
+      f.genres.map(g => `<span class="tag">${g}</span>`).join('') +
+      `<span class="tag">${f.year}</span>`;
+
+    const detailPosterBg = document.querySelector('#page-detail .poster-bg');
+    detailPosterBg.style.background = f.gradient;
+    detailPosterBg.dataset.tmdbId = f.tmdbId;
+    detailPosterBg.querySelectorAll('img').forEach(img => img.remove());
+    const td = tmdbCache[String(f.tmdbId)];
+    if (td?.poster) {
+      const img = document.createElement('img');
+      img.className = 'loading';
+      img.src = td.poster;
+      img.onload = () => img.classList.remove('loading');
+      detailPosterBg.appendChild(img);
+    }
+
+    buildShowtimes(f);
+  }
+
+  function setFilm(filmId) {
+    currentFilmId = filmId;
+    const f = FILMS.find(f => f.id === filmId);
+    if (!f) return;
+
+    document.querySelector('.hero-title').innerHTML = f.title;
+    document.querySelector('.hero-eyebrow').innerHTML =
+      `<span>Jetzt im Kino</span>${buildBadges(f)}`;
+    document.querySelector('.hero-meta').innerHTML = `
+      <span class="star">★ ${f.rating}</span>
+      <div class="dot"></div><span>${f.duration}</span>
+      <div class="dot"></div><span>FSK ${f.fsk}</span>
+      <div class="dot"></div><span>${f.genres[0]} · ${f.genres[1]}</span>`;
+    document.querySelector('.hero-desc').textContent = f.desc;
+
+    const heroPosterBg = document.getElementById('hero-poster-bg');
+    heroPosterBg.style.background = f.gradient;
+    const heroArt = document.getElementById('hero-art');
+    heroArt.querySelectorAll('img').forEach(img => img.remove());
+    const td = tmdbCache[String(f.tmdbId)];
+    if (td?.poster) {
+      const img = document.createElement('img');
+      img.className = 'loading';
+      img.src = td.poster.replace('w500', 'w780');
+      img.onload = () => img.classList.remove('loading');
+      heroArt.insertBefore(img, heroArt.querySelector('.hero-poster-shine'));
+    }
+
+    const backdropEl = document.getElementById('hero-backdrop');
+    backdropEl.classList.remove('loaded');
+    backdropEl.src = '';
+    if (td?.backdrop) {
+      backdropEl.src = td.backdrop;
+      backdropEl.onload = () => backdropEl.classList.add('loaded');
+    }
+
+    const trailerBtn = document.querySelector('.hero-actions .trailer-btn');
+    if (trailerBtn) trailerBtn.onclick = () => openTrailer(f.trailerYtId);
+    const lbBtn = document.querySelector('.hero-actions a.trailer-btn');
+    if (lbBtn) lbBtn.href = `https://letterboxd.com/film/${f.id}/`;
+
+    updateDetailPage(f);
+  }
+
+  loadAllTmdb().then(() => setFilm('dune-2'));
 
   /* ── Nav scroll ── */
   const nav = document.getElementById('nav');
